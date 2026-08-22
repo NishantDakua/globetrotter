@@ -66,8 +66,8 @@ export default function LandingPage() {
         </div>
 
         {/* Navigation */}
-        <header className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/" className="group flex items-center">
+        <header className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-3 items-center">
+          <Link to="/" className="group flex items-center justify-start">
             <img 
               src={logoImg} 
               alt="GlobalTrotter" 
@@ -75,7 +75,7 @@ export default function LandingPage() {
             />
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+          <nav className="hidden md:flex items-center justify-center space-x-8 text-sm font-medium text-gray-300">
             <Link to="/" className="text-gt-teal border-b-2 border-gt-teal pb-1">Explore</Link>
             <a
               href="#adventures"
@@ -88,12 +88,9 @@ export default function LandingPage() {
               Itineraries
             </a>
             <Link to="/community" className="hover:text-white transition">Community</Link>
-            <span className="text-gray-500 cursor-not-allowed flex items-center gap-1">
-              Journal <span className="text-[9px] uppercase px-1 rounded bg-white/5 font-semibold">Soon</span>
-            </span>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-end gap-4">
             {!isPending && user ? (
               <div className="flex items-center gap-3 bg-slate-900/80 border border-slate-800 backdrop-blur-md pl-3 pr-2 py-1.5 rounded-full shadow-lg">
                 {user.image ? (
