@@ -226,10 +226,10 @@ const Settings = () => {
           <p className="text-gray-400 text-sm">Manage your profile, preferences, and account settings.</p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-gt-surface border border-gt-border rounded-2xl overflow-hidden shadow-xl sticky top-24">
+          <aside className="w-full md:w-64 flex-shrink-0">
+            <div className="bg-gt-surface border border-gt-border rounded-2xl overflow-hidden shadow-xl md:sticky md:top-24">
               <div className="p-5 border-b border-gt-border flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gt-input border border-gt-border flex-shrink-0">
                   {photoPreview ? (
@@ -241,7 +241,9 @@ const Settings = () => {
                   )}
                 </div>
                 <div className="min-w-0">
-                   <h3 className="font-medium text-white truncate text-sm">{formData.firstName} {formData.lastName}</h3>
+                   <h3 className="font-medium text-white truncate text-sm">
+                     {formData.firstName || formData.lastName ? `${formData.firstName} ${formData.lastName}`.trim() : 'Traveler'}
+                   </h3>
                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
                 </div>
               </div>
