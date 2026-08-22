@@ -14,11 +14,15 @@ export default function LazyVideo({
   playsInline = true,
   ...props
 }) {
-  const [inView, setInView] = useState(priority);
+  const [inView, setInView] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (priority || inView) return;
+    // If priority is true, delay video source instantiation by 1.5s to let FCP/LCP poster render first
+    if (priority) {
+      const timer = setTimeout(() => setInView(true), 1500);
+      return () => clearTimeout(timer);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

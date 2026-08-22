@@ -6,28 +6,28 @@ import LazyVideo from '../components/LazyVideo';
 
 const itineraries = [
   {
-    id: 'swiss-alps',
-    title: 'Swiss Alps Traverse',
+    id: 'kedarnath',
+    title: 'Kedarnath Himalayan Yatra',
     badge: 'ALPINE',
     duration: '7 Days',
-    image: '/images/pexels-alok-kumar-273007-15031440.jpg',
-    description: 'A 7-day luxurious lodge-to-lodge hike through the pristine Bernese Oberland.'
+    image: '/images/kedarnath.jpg',
+    description: 'A 7-day spiritual pilgrimage and high-altitude trek set against the snow-capped Himalayan peaks of Uttarakhand.'
   },
   {
-    id: 'amalfi',
-    title: 'Amalfi Elegance',
-    badge: 'COASTAL',
-    duration: '5 Days',
-    image: '/images/pexels-frank-van-dijk-121009207-39078873.jpg',
-    description: 'Boutique stays, private boat tours, and Michelin-starred dining overlooking the Mediterranean.'
+    id: 'jal-mahal',
+    title: 'Jaipur Palace & Jal Mahal',
+    badge: 'HERITAGE',
+    duration: '4 Days',
+    image: '/images/jal-mahal.jpg',
+    description: 'Explore royal Rajputana architecture, vibrant bazaars, and private boat views of the floating Water Palace.'
   },
   {
-    id: 'kyoto',
-    title: 'Kyoto Traditions',
+    id: 'banaras-aarti',
+    title: 'Varanasi Ghats & Ganga Aarti',
     badge: 'CULTURAL',
-    duration: '10 Days',
-    image: '/images/pexels-artosuraj-28762054.jpg',
-    description: 'Immersive tea ceremonies, ancient temple tours, and stays in meticulously restored ryokans.'
+    duration: '5 Days',
+    image: '/images/ganga-aarti-banaras.jpg',
+    description: 'Experience evening oil-lamp ceremonies, sunrise boat cruises on the sacred Ganges, and ancient alleyway culinary tours.'
   }
 ];
 
