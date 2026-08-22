@@ -70,7 +70,7 @@ const UpcomingTripCard = ({ trip, onEdit, onChange, onDelete, onTogglePublic }) 
           className="bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
         >
           <Edit3 size={14} className="text-gray-400" />
-          <span className="truncate">Edit Trips</span>
+          <span className="truncate">Edit Trip</span>
         </button>
 
         <button
