@@ -22,7 +22,7 @@ const Register = () => {
 
   useEffect(() => {
     if (!isPending && sessionData?.user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/community', { replace: true });
     }
   }, [isPending, sessionData, navigate]);
 
@@ -59,7 +59,7 @@ const Register = () => {
       if (authError) {
         throw new Error(authError.message || 'Registration failed.');
       }
-      navigate('/dashboard');
+      navigate('/community');
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -70,7 +70,7 @@ const Register = () => {
   const handleGoogleAuth = async () => {
     await auth.signIn.social({ 
       provider: 'google',
-      callbackURL: '/dashboard'
+      callbackURL: '/community'
     });
   };
 

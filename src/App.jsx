@@ -2,13 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import Community from './pages/Community';
 import { reactAuth } from './lib/auth';
 
 function RootRedirect() {
   const { data: sessionData, isPending } = reactAuth.useSession();
   if (isPending) return null;
-  return sessionData?.user ? <Navigate to="/dashboard" replace /> : <Navigate to="/register" replace />;
+  return sessionData?.user ? <Navigate to="/community" replace /> : <Navigate to="/register" replace />;
 }
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/community" element={<Community />} />
       </Routes>
     </Router>
   );

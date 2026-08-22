@@ -18,7 +18,7 @@ const Login = () => {
 
   useEffect(() => {
     if (!isPending && sessionData?.user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/community', { replace: true });
     }
   }, [isPending, sessionData, navigate]);
 
@@ -48,7 +48,7 @@ const Login = () => {
       if (authError) {
         throw new Error(authError.message || 'Login failed.');
       }
-      navigate('/dashboard');
+      navigate('/community');
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -59,7 +59,7 @@ const Login = () => {
   const handleGoogleAuth = async () => {
     await auth.signIn.social({ 
       provider: 'google',
-      callbackURL: '/dashboard'
+      callbackURL: '/community'
     });
   };
 
