@@ -77,7 +77,10 @@ const Register = () => {
   return (
     <AuthLayout>
       <div className="w-full max-w-[420px] mx-auto">
-        <h2 className="text-xl font-semibold text-blue-300 tracking-wide mb-6">GlobeTrotter</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <img src="/logo.png" alt="GlobeTrotter Logo" className="w-8 h-8 rounded-lg object-contain p-0.5" />
+          <h2 className="text-xl font-semibold text-blue-300 tracking-wide">GlobeTrotter</h2>
+        </div>
         
         <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">Begin Your Journey</h1>
         <p className="text-sm text-gt-text-light mb-8 leading-relaxed">

@@ -35,9 +35,11 @@ const Sidebar = ({ onOpenNewTrip }) => {
       {/* Mobile Hamburger Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#111219] border-b border-white/5 sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gray-700/60 border border-white/10 flex items-center justify-center text-xs font-mono font-bold text-gray-300">
-            img
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="GlobeTrotter Logo" 
+            className="w-8 h-8 rounded-lg border border-white/10 object-contain p-0.5"
+          />
           <div>
             <div className="text-sm font-semibold text-white tracking-tight">GlobalTrotter</div>
             <div className="text-[10px] text-gray-400 tracking-wide uppercase">Elite Explorer</div>
@@ -68,9 +70,11 @@ const Sidebar = ({ onOpenNewTrip }) => {
         <div className="space-y-8">
           {/* Brand Logo & Subtitle */}
           <div className="flex items-center gap-3.5 px-2 pt-1">
-            <div className="w-10 h-10 rounded-xl bg-gray-700/50 border border-white/15 flex items-center justify-center shadow-inner">
-              <span className="text-xs font-mono font-semibold text-gray-300 tracking-tighter">img</span>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="GlobeTrotter Logo" 
+              className="w-10 h-10 rounded-xl border border-white/15 shadow-inner object-contain p-0.5"
+            />
             <div>
               <h1 className="text-base font-bold text-white tracking-tight leading-tight">
                 GlobalTrotter

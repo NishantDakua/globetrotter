@@ -67,12 +67,8 @@ const Community = () => {
     }, 3500);
   };
 
-  // Followed contributors and Joined groups list
+  // Followed contributors list
   const [followedUsers, setFollowedUsers] = useState(new Set());
-  const [joinedGroups, setJoinedGroups] = useState(new Set([1])); // default join Group 1
-
-  // Modals state
-  const [isExploreGroupsModalOpen, setIsExploreGroupsModalOpen] = useState(false);
 
   // Expanded comments section state (post IDs)
   const [expandedComments, setExpandedComments] = useState(new Set());
@@ -137,19 +133,6 @@ const Community = () => {
     },
   ]);
 
-  // Form states for creating a new post
-  const [isPostFormExpanded, setIsPostFormExpanded] = useState(false);
-  const [newPostData, setNewPostData] = useState({
-    title: '',
-    location: '',
-    description: '',
-    duration: '3 Days',
-    budget: '$500',
-    stops: '',
-    activities: '',
-    category: 'nature'
-  });
-
   // Load user details from Neon Auth Session
   useEffect(() => {
     if (sessionData?.user) {
@@ -188,21 +171,6 @@ const Community = () => {
       } else {
         next.add(userId);
         showToast(`Following ${name}!`);
-      }
-      return next;
-    });
-  };
-
-  // Join/leave group toggle
-  const toggleJoinGroup = (groupId, name) => {
-    setJoinedGroups(prev => {
-      const next = new Set(prev);
-      if (next.has(groupId)) {
-        next.delete(groupId);
-        showToast(`Left ${name}`);
-      } else {
-        next.add(groupId);
-        showToast(`Joined ${name}! Welcome aboard!`);
       }
       return next;
     });
@@ -269,64 +237,6 @@ const Community = () => {
     showToast(`"${post.title}" copied! (My Trips page will be integrated by your teammate)`);
   };
 
-  // Create new post in community feed (only structured trips allowed)
-  const handleCreatePost = (e) => {
-    e.preventDefault();
-    const { title, location, description, duration, budget, stops, activities, category } = newPostData;
-    
-    // Strict validation: must provide stops and activities to share a trip itinerary
-    if (!title.trim() || !location.trim() || !description.trim() || !stops.trim() || !activities.trim()) {
-      showToast('Itinerary error: Multi-city stops and activities are required to share a trip.', 'error');
-      return;
-    }
-
-    const categoryImages = {
-      nature: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80',
-      beach: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-      city: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800&q=80',
-      mountains: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
-    };
-
-    const newPost = {
-      id: Date.now(),
-      isPublic: true, // Mark trip as public so it's visible in the community feed
-      user: {
-        name: userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'You',
-        avatar: userProfile ? `${userProfile.firstName.charAt(0)}${userProfile.lastName.charAt(0)}` : 'U',
-        color: 'bg-teal-600',
-        location: location,
-        time: 'Just now'
-      },
-      title,
-      description,
-      image: categoryImages[category] || categoryImages.nature,
-      likes: 0,
-      likedByUser: false,
-      comments: [],
-      itinerary: {
-        destination: location,
-        duration: duration || '3 Days',
-        budget: budget || '$500',
-        stops: stops.split(',').map(s => s.trim()).filter(Boolean),
-        activities: activities.split(',').map(a => a.trim()).filter(Boolean),
-      }
-    };
-
-    setPosts([newPost, ...posts]);
-    setIsPostFormExpanded(false);
-    setNewPostData({
-      title: '',
-      location: '',
-      description: '',
-      duration: '3 Days',
-      budget: '$500',
-      stops: '',
-      activities: '',
-      category: 'nature'
-    });
-    showToast('Published your public trip route to the feed!');
-  };
-
   // Notifications helpers
   const clearNotifications = () => {
     setNotifications([]);
@@ -358,13 +268,6 @@ const Community = () => {
       </div>
     );
   }
-
-  const groupsToFind = [
-    { id: 1, name: 'Solo Luxury Travelers', count: '1.2k Members', desc: 'Connect with others wh...', icon: '💎' },
-    { id: 2, name: 'Culinary Explorers', count: '850 Members', desc: 'Fine dining and hidden...', icon: '🍜' },
-    { id: 3, name: 'Backpackers & Hostels', count: '2.1k Members', desc: 'Budget-friendly travel...', icon: '🎒' },
-    { id: 4, name: 'Scuba & Marine Life', count: '520 Members', desc: 'Undersea exploration...', icon: '🤿' }
-  ];
 
   const topContributors = [
     { id: 10, name: 'Arthur Pendelton', rank: 1, copies: '34 Trips Copied', avatar: 'AP', color: 'bg-blue-600' },
@@ -678,177 +581,12 @@ const Community = () => {
                     )}
                   </div>
 
-                  {/* Create New Post Form Card */}
-                  <div className="bg-[#12131d] border border-[#212338] rounded-2xl p-5 shadow-xl transition-all">
-                    {!isPostFormExpanded ? (
-                      <div 
-                        onClick={() => setIsPostFormExpanded(true)}
-                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-white"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center font-bold text-white">
-                          {userProfile.firstName.charAt(0)}
-                        </div>
-                        <div className="flex-1 bg-[#181928] border border-[#262842] rounded-xl px-4 py-2.5 text-sm transition-colors hover:bg-[#1a1c2f]">
-                          Add a new structured trip itinerary to share with the community...
-                        </div>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleCreatePost} className="space-y-4">
-                        <div className="flex justify-between items-center pb-2 border-b border-[#212338]">
-                          <span className="text-xs text-slate-400 font-semibold tracking-wide uppercase">Share Structured Trip Itinerary</span>
-                          <button 
-                            type="button" 
-                            onClick={() => setIsPostFormExpanded(false)}
-                            className="text-slate-400 hover:text-white"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-
-                        {/* Itinerary Rules Banner */}
-                        <div className="bg-amber-950/20 border border-amber-800/40 text-amber-200/90 p-3 rounded-xl text-[10px] leading-relaxed">
-                          <strong>Trip Itinerary Rule:</strong> To share a trip in this community, you must specify multi-city stops, activities, and budget. General travel updates or experiences without a route itinerary are not allowed.
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Trip Title (Required)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. 5 Days in Positano Beaches"
-                              required
-                              value={newPostData.title}
-                              onChange={(e) => setNewPostData({ ...newPostData, title: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Destination (Required)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. Amalfi Coast, Italy"
-                              required
-                              value={newPostData.location}
-                              onChange={(e) => setNewPostData({ ...newPostData, location: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs text-slate-400 mb-1 font-medium">Trip Notes & Route Details (Required)</label>
-                          <textarea 
-                            placeholder="Describe your itinerary tips, sunset views, where to eat, or boat rental contacts..."
-                            rows="3"
-                            required
-                            value={newPostData.description}
-                            onChange={(e) => setNewPostData({ ...newPostData, description: e.target.value })}
-                            className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86] resize-none"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Trip Duration (Required)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. 3 Days"
-                              required
-                              value={newPostData.duration}
-                              onChange={(e) => setNewPostData({ ...newPostData, duration: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Estimated Budget (Required)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. $800"
-                              required
-                              value={newPostData.budget}
-                              onChange={(e) => setNewPostData({ ...newPostData, budget: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Visual Style theme</label>
-                            <select
-                              value={newPostData.category}
-                              onChange={(e) => setNewPostData({ ...newPostData, category: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            >
-                              <option value="nature">Bamboo Forest / Nature</option>
-                              <option value="beach">Tropical Beach</option>
-                              <option value="city">Historic City Center</option>
-                              <option value="mountains">Snowy Peak / Alps</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Multi-City Stops (Required, Comma separated)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. Stop A, Stop B, Stop C"
-                              required
-                              value={newPostData.stops}
-                              onChange={(e) => setNewPostData({ ...newPostData, stops: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-slate-400 mb-1 font-medium">Planned Activities (Required, Comma separated)</label>
-                            <input 
-                              type="text" 
-                              placeholder="e.g. Sightseeing, Food Tour, Boat Ride"
-                              required
-                              value={newPostData.activities}
-                              onChange={(e) => setNewPostData({ ...newPostData, activities: e.target.value })}
-                              className="w-full bg-[#181928] border border-[#262842] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#009b86]"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="pt-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                          <div className="flex items-center gap-2">
-                            <input 
-                              type="checkbox" 
-                              id="confirm-public-trip"
-                              required 
-                              className="rounded border-[#262842] bg-[#181928] text-[#009b86] focus:ring-0 cursor-pointer"
-                            />
-                            <label htmlFor="confirm-public-trip" className="text-[10px] text-slate-400 cursor-pointer select-none">
-                              Make this trip route public to all travelers in the community feed
-                            </label>
-                          </div>
-
-                          <div className="flex justify-end gap-3">
-                            <button 
-                              type="button" 
-                              onClick={() => setIsPostFormExpanded(false)}
-                              className="bg-transparent hover:bg-slate-800 text-slate-300 font-medium px-4 py-2 rounded-xl text-xs transition-colors"
-                            >
-                              Cancel
-                            </button>
-                            <button 
-                              type="submit" 
-                              className="bg-[#009b86] hover:bg-[#008674] text-white font-semibold px-4 py-2 rounded-xl text-xs transition-all shadow-md shadow-[#009b86]/10"
-                            >
-                              Publish Trip Route
-                            </button>
-                          </div>
-                        </div>
-                      </form>
-                    )}
-                  </div>
-
                   {/* Traveler Feed Posts list */}
                   {filteredPosts.length === 0 ? (
                     <div className="bg-[#12131d] border border-[#212338] rounded-2xl p-12 text-center text-slate-400 space-y-3">
                       <p className="font-semibold text-lg text-white">No itineraries matching search criteria</p>
                       <button 
-                        onClick={() => { setSearchQuery(''); setIsPostFormExpanded(true); }}
+                        onClick={() => { setSearchQuery(''); }}
                         className="bg-[#009b86] hover:bg-[#008674] text-white px-4 py-2 rounded-xl text-xs font-semibold mt-2"
                       >
                         Reset Search
@@ -1002,45 +740,6 @@ const Community = () => {
                 {/* Right Widgets Sidebar Column (Column 3) */}
                 <div className="space-y-6">
                   
-                  {/* FIND TRAVEL GROUPS CARD */}
-                  <section className="bg-[#12131d] border border-[#212338] rounded-2xl p-5 shadow-xl space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-[#212338]">
-                      <Users size={18} className="text-[#009b86]" />
-                      <h3 className="font-display font-semibold text-base text-white tracking-wide">Find Travel Groups</h3>
-                    </div>
-
-                    <div className="space-y-3.5">
-                      {groupsToFind.slice(0, 2).map(group => (
-                        <div key={group.id} className="p-3 bg-[#171927] border border-[#202235] rounded-xl flex items-center justify-between gap-3 hover:border-slate-700 transition-colors">
-                          <div className="flex items-start gap-2.5">
-                            <span className="text-xl mt-0.5">{group.icon}</span>
-                            <div className="min-w-0">
-                              <h4 className="font-semibold text-xs text-white truncate">{group.name}</h4>
-                              <p className="text-[10px] text-teal-400 font-medium mt-0.5">{group.count}</p>
-                              <p className="text-[10px] text-slate-400 mt-1 truncate">{group.desc}</p>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => toggleJoinGroup(group.id, group.name)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
-                              joinedGroups.has(group.id)
-                                ? 'bg-teal-950 border border-teal-800 text-teal-300'
-                                : 'bg-[#1b1c2b] border border-slate-700 hover:border-slate-500 text-slate-200'
-                            }`}
-                          >
-                            {joinedGroups.has(group.id) ? 'Joined ✓' : 'Join'}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <button 
-                      onClick={() => setIsExploreGroupsModalOpen(true)}
-                      className="w-full bg-[#1b1c2b] border border-[#272942] hover:border-slate-600 text-slate-300 py-2.5 rounded-xl text-xs font-semibold transition-colors"
-                    >
-                      Explore All Groups
-                    </button>
-                  </section>
 
                   {/* TOP CONTRIBUTORS CARD */}
                   <section className="bg-[#12131d] border border-[#212338] rounded-2xl p-5 shadow-xl space-y-4">
@@ -1108,56 +807,7 @@ const Community = () => {
         </div>
       </div>
 
-      {/* MODAL: EXPLORE ALL GROUPS */}
-      {isExploreGroupsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-[#0f111d] border border-[#202236] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-[#202236]">
-              <h3 className="font-display font-semibold text-lg text-white">Explore Travel Communities</h3>
-              <button 
-                onClick={() => setIsExploreGroupsModalOpen(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X size={18} />
-              </button>
-            </div>
 
-            <div className="space-y-3.5 max-h-96 overflow-y-auto">
-              {groupsToFind.map(group => (
-                <div key={group.id} className="p-3 bg-[#171927] border border-[#202235] rounded-xl flex items-center justify-between gap-3">
-                  <div className="flex items-start gap-2.5 min-w-0">
-                    <span className="text-2xl mt-0.5">{group.icon}</span>
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs text-white truncate">{group.name}</h4>
-                      <p className="text-[10px] text-teal-400 font-medium mt-0.5">{group.count}</p>
-                      <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{group.desc}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => toggleJoinGroup(group.id, group.name)}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all whitespace-nowrap ${
-                      joinedGroups.has(group.id)
-                        ? 'bg-teal-950 border border-teal-800 text-teal-300'
-                        : 'bg-[#1b1c2b] border border-slate-700 hover:border-slate-500 text-slate-200'
-                    }`}
-                  >
-                    {joinedGroups.has(group.id) ? 'Joined ✓' : 'Join Group'}
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button 
-                onClick={() => setIsExploreGroupsModalOpen(false)}
-                className="bg-[#1b1c2b] hover:bg-slate-800 text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
