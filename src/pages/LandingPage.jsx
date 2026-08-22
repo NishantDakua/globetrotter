@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Compass, Mountain, MapPin, ArrowRight, ShieldCheck, Globe, UserCheck } from 'lucide-react';
+import OptimizedImage from '../components/OptimizedImage';
+import LazyVideo from '../components/LazyVideo';
 
 const itineraries = [
   {
-    id: 'swiss-alps',
-    title: 'Swiss Alps Traverse',
+    id: 'kedarnath',
+    title: 'Kedarnath Himalayan Yatra',
     badge: 'ALPINE',
     duration: '7 Days',
-    image: '/images/pexels-alok-kumar-273007-15031440.jpg',
-    description: 'A 7-day luxurious lodge-to-lodge hike through the pristine Bernese Oberland.'
+    image: '/images/kedarnath.jpg',
+    description: 'A 7-day spiritual pilgrimage and high-altitude trek set against the snow-capped Himalayan peaks of Uttarakhand.'
   },
   {
-    id: 'amalfi',
-    title: 'Amalfi Elegance',
-    badge: 'COASTAL',
-    duration: '5 Days',
-    image: '/images/pexels-frank-van-dijk-121009207-39078873.jpg',
-    description: 'Boutique stays, private boat tours, and Michelin-starred dining overlooking the Mediterranean.'
+    id: 'jal-mahal',
+    title: 'Jaipur Palace & Jal Mahal',
+    badge: 'HERITAGE',
+    duration: '4 Days',
+    image: '/images/jal-mahal.jpg',
+    description: 'Explore royal Rajputana architecture, vibrant bazaars, and private boat views of the floating Water Palace.'
   },
   {
-    id: 'kyoto',
-    title: 'Kyoto Traditions',
+    id: 'banaras-aarti',
+    title: 'Varanasi Ghats & Ganga Aarti',
     badge: 'CULTURAL',
-    duration: '10 Days',
-    image: '/images/pexels-artosuraj-28762054.jpg',
-    description: 'Immersive tea ceremonies, ancient temple tours, and stays in meticulously restored ryokans.'
+    duration: '5 Days',
+    image: '/images/ganga-aarti-banaras.jpg',
+    description: 'Experience evening oil-lamp ceremonies, sunrise boat cruises on the sacred Ganges, and ancient alleyway culinary tours.'
   }
 ];
 
@@ -41,15 +43,12 @@ export default function LandingPage() {
       <div className="relative min-h-[90vh] flex flex-col justify-between overflow-hidden">
         {/* Background Video with Dark Overlay */}
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
+          <LazyVideo
+            src="/videos/optimized/15519794_3840_2160_24fps.mp4"
+            poster="/videos/posters/15519794_3840_2160_24fps.webp"
+            priority={true}
             className="w-full h-full object-cover scale-105 filter brightness-75"
-          >
-            <source src="/videos/15519794_3840_2160_24fps.mp4" type="video/mp4" />
-          </video>
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-gt-bg/80 via-gt-bg/50 to-gt-bg" />
         </div>
 
@@ -174,12 +173,13 @@ export default function LandingPage() {
               className="bg-gt-card border border-gt-border rounded-2xl overflow-hidden hover:border-gt-teal/50 hover:bg-gt-card-hover transition duration-300 flex flex-col group"
             >
               <div className="relative h-60 overflow-hidden">
-                <img
+                <OptimizedImage
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  aspectRatio="16 / 9"
+                  className="w-full h-full group-hover:scale-105 transition duration-500"
                 />
-                <span className="absolute top-4 left-4 bg-gt-teal/90 text-slate-950 font-bold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md">
+                <span className="absolute top-4 left-4 bg-gt-teal/90 text-slate-950 font-bold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md z-10">
                   {item.badge}
                 </span>
               </div>
@@ -248,16 +248,13 @@ export default function LandingPage() {
             </div>
 
             <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl group">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
+              <LazyVideo
+                src="/videos/optimized/19096556-uhd_3840_2160_24fps.mp4"
+                poster="/videos/posters/19096556-uhd_3840_2160_24fps.webp"
+                priority={false}
                 className="w-full h-80 lg:h-96 object-cover"
-              >
-                <source src="/videos/19096556-uhd_3840_2160_24fps.mp4" type="video/mp4" />
-              </video>
-              <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/10 transition duration-300" />
+              />
+              <div className="absolute inset-0 bg-slate-950/30 group-hover:bg-slate-950/10 transition duration-300 pointer-events-none" />
             </div>
           </div>
         </div>
