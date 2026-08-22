@@ -7,15 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        'gt-bg': '#0f172a', // Dark navy background
-        'gt-input': '#1e293b', // Dark slate input
-        'gt-border': '#334155', // Subtle border
-        'gt-primary': '#3b82f6', // Blue primary accent
-        'gt-primary-hover': '#2563eb', // Hover state
-        'gt-text-light': '#94a3b8', // Small supporting description
-        'gt-card': 'rgba(30, 41, 59, 0.7)', // Glassmorphism card bg
+        'gt-bg': '#090B0E',
+        'gt-card': '#11161D',
+        'gt-card-hover': '#161C26',
+        'gt-border': '#1F2937',
+        'gt-teal': '#00A88F',
+        'gt-teal-hover': '#008F7A',
+        'gt-text-muted': '#9CA3AF',
+        'gt-input': '#131920',
       },
       fontFamily: {
+        serif: ['Playfair Display', 'Georgia', 'serif'],
         sans: ['Inter', 'sans-serif'],
       },
     },
