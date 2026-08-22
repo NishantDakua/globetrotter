@@ -7,12 +7,10 @@ const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Settings = lazy(() => import('./pages/Settings'));
-
-function RootRedirect() {
-  const { data: sessionData, isPending } = reactAuth.useSession();
-  if (isPending) return null;
-  return sessionData?.user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
-}
+const Community = lazy(() => import('./pages/Community'));
+const MyTrips = lazy(() => import('./pages/MyTrips'));
+const LiveItinerary = lazy(() => import('./pages/LiveItinerary'));
+const NewTrip = lazy(() => import('./pages/NewTrip'));
 
 function LoadingFallback() {
   return (
@@ -34,6 +32,12 @@ function App() {
           <Route path="/complete-profile" element={<CompleteProfile />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/trips" element={<MyTrips />} />
+          <Route path="/my-trips" element={<MyTrips />} />
+          <Route path="/itinerary" element={<LiveItinerary />} />
+          <Route path="/live-itinerary" element={<LiveItinerary />} />
+          <Route path="/new-trip" element={<NewTrip />} />
         </Routes>
       </Suspense>
     </Router>
