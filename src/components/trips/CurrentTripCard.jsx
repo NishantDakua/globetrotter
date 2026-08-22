@@ -79,7 +79,7 @@ const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTri
               className="w-full bg-transparent hover:bg-teal-500/10 border border-teal-500/40 text-teal-300 hover:text-teal-200 py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer"
             >
               <Edit3 size={16} />
-              <span>Edit Trips</span>
+              <span>Edit Trip</span>
             </button>
 
             {onTogglePublic && (
