@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, reactAuth } from '../lib/auth';
 import { buildTrip } from '../lib/tripsStore';
+import Sidebar from '../components/trips/Sidebar';
 import { 
   Home, 
   Map, 
@@ -438,121 +439,7 @@ const Community = () => {
       <div className="flex flex-1 relative overflow-hidden">
         
         {/* SIDEBAR */}
-        <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0c0d14] border-r border-[#1e2030] flex flex-col transform transition-transform duration-300 lg:translate-x-0 lg:static ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
-          {/* Logo Section */}
-          <div className="p-6 border-b border-[#1e2030] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#009b86] to-[#0ea5e9] flex items-center justify-center shadow-lg shadow-[#009b86]/20">
-              <Globe size={22} className="text-white" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-lg leading-tight tracking-wide text-white">GlobalTrotter</h2>
-              <span className="text-xs font-medium text-slate-400">Premium Travel</span>
-            </div>
-            <button 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="lg:hidden ml-auto text-slate-400 hover:text-white p-1"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
-            <button
-              onClick={() => { setActiveTab('main'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'main' 
-                  ? 'bg-[#181a26] text-white border-r-2 border-[#009b86]' 
-                  : 'text-slate-400 hover:bg-[#12131f] hover:text-white'
-              }`}
-            >
-              <Home size={18} className={activeTab === 'main' ? 'text-[#009b86]' : ''} />
-              <span>Main Page</span>
-            </button>
-
-            <button
-              onClick={() => { navigate('/trips'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'trips' 
-                  ? 'bg-[#181a26] text-white border-r-2 border-[#009b86]' 
-                  : 'text-slate-400 hover:bg-[#12131f] hover:text-white'
-              }`}
-            >
-              <Map size={18} className={activeTab === 'trips' ? 'text-[#009b86]' : ''} />
-              <span>My Trips</span>
-            </button>
-
-            <button
-              onClick={() => { setActiveTab('explore'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'explore' 
-                  ? 'bg-[#181a26] text-white border-r-2 border-[#009b86]' 
-                  : 'text-slate-400 hover:bg-[#12131f] hover:text-white'
-              }`}
-            >
-              <Compass size={18} className={activeTab === 'explore' ? 'text-[#009b86]' : ''} />
-              <span>Explore</span>
-            </button>
-
-            <button
-              onClick={() => { setActiveTab('community'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'community' 
-                  ? 'bg-[#181a26] text-white border-r-2 border-[#009b86]' 
-                  : 'text-slate-400 hover:bg-[#12131f] hover:text-white'
-              }`}
-            >
-              <Users size={18} className={activeTab === 'community' ? 'text-[#009b86]' : ''} />
-              <span>Community</span>
-            </button>
-          </nav>
-
-          {/* User Footer & Action Placeholder */}
-          <div className="p-4 border-t border-[#1e2030] space-y-4">
-            <button
-              onClick={() => showToast('New Trip creation belongs to My Trips page.')}
-              className="w-full bg-[#009b86] hover:bg-[#008674] text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#009b86]/10"
-            >
-              <Plus size={18} />
-              <span>New Trip</span>
-            </button>
-
-            <div className="flex items-center gap-3 bg-[#11121b] p-3 rounded-xl border border-[#1e2030]">
-              {userProfile.profilePicture ? (
-                <img 
-                  src={userProfile.profilePicture} 
-                  alt="Profile" 
-                  className="w-9 h-9 rounded-full object-cover border border-slate-700" 
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center font-bold text-sm text-white">
-                  {userProfile.firstName.charAt(0)}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-white truncate">{`${userProfile.firstName} ${userProfile.lastName}`}</p>
-                <p className="text-[10px] text-slate-400 truncate">{userProfile.travelStyle}</p>
-              </div>
-              <button 
-                onClick={handleLogout}
-                className="text-slate-400 hover:text-red-400 p-1 transition-colors"
-                title="Sign Out"
-              >
-                <LogOut size={15} />
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* Backdrop for mobile menu */}
-        {isMobileMenuOpen && (
-          <div 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 z-30 lg:hidden"
-          ></div>
-        )}
+        <Sidebar />
 
         {/* MAIN BODY AREA */}
         <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
