@@ -39,6 +39,10 @@ const NewTrip = () => {
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, submit: 'Cover image must be 2MB or smaller.' }));
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       setCoverImage(ev.target.result);
