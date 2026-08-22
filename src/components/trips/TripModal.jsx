@@ -1,33 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Calendar, MapPin, Check, Compass, Plus, Luggage } from 'lucide-react';
+import { formatDateRange, computeCountdownDays } from '../../lib/tripsStore';
+
+// Helper to parse date strings (e.g. "Feb 10 - Feb 24, 2025" or YYYY-MM-DD) into YYYY-MM-DD
+const parseTripDates = (data) => {
+  if (!data) return { start: '', end: '' };
+  
+  let start = data.departureDate || data.startDate || '';
+  let end = data.returnDate || data.endDate || '';
+
+  const formatISO = (dateObj) => {
+    if (!dateObj || isNaN(dateObj.getTime())) return '';
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  if (!start && data.dates) {
+    const parts = data.dates.split(' - ');
+    if (parts.length === 2) {
+      const yearMatch = data.dates.match(/\d{4}/);
+      const year = yearMatch ? yearMatch[0] : new Date().getFullYear();
+
+      const sRaw = parts[0].includes(',') ? parts[0] : `${parts[0]}, ${year}`;
+      const eRaw = parts[1].includes(',') ? parts[1] : `${parts[1]}, ${year}`;
+
+      const sDate = new Date(sRaw);
+      const eDate = new Date(eRaw);
+
+      if (!isNaN(sDate.getTime())) start = formatISO(sDate);
+      if (!isNaN(eDate.getTime())) end = formatISO(eDate);
+    }
+  }
+
+  if (start && !/^\d{4}-\d{2}-\d{2}$/.test(start)) {
+    const d = new Date(start);
+    if (!isNaN(d.getTime())) start = formatISO(d);
+  }
+
+  if (end && !/^\d{4}-\d{2}-\d{2}$/.test(end)) {
+    const d = new Date(end);
+    if (!isNaN(d.getTime())) end = formatISO(d);
+  }
+
+  return { start: start || '', end: end || '' };
+};
 
 const TripModal = ({ type, data, isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
 
   // Form states for New Trip / Edit
-  const [title, setTitle] = useState(data?.title || '');
-  const [destination, setDestination] = useState(data?.destination || '');
+  const [title, setTitle] = useState('');
+  const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && data) {
+      setTitle(data.title || '');
+      setDestination(data.destination || '');
+      const { start, end } = parseTripDates(data);
+      setStartDate(start);
+      setEndDate(end);
+    } else if (isOpen) {
+      setTitle('');
+      setDestination('');
+      setStartDate('');
+      setEndDate('');
+    }
+  }, [isOpen, data]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
     setTimeout(() => {
       if (onSubmit) {
+        let formattedDates = data?.dates || '';
+        if (startDate && endDate) {
+          formattedDates = formatDateRange(startDate, endDate);
+        } else if (startDate) {
+          formattedDates = startDate;
+        }
+
+        const countdown = startDate ? computeCountdownDays(startDate) : (data?.countdownDays || 30);
+
         onSubmit({
-          id: Date.now().toString(),
+          ...data,
+          id: data?.id || `trip-${Date.now()}`,
           title: title || 'New Travel Adventure',
           destination: destination || 'Global Destination',
-          dates: `${startDate || 'Jun 01'} - ${endDate || 'Jun 15, 2025'}`,
-          countdownDays: Math.floor(Math.random() * 90) + 10,
-          image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop'
+          startDate,
+          endDate,
+          departureDate: startDate,
+          returnDate: endDate,
+          dates: formattedDates,
+          countdownDays: countdown,
+          image: data?.image || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1000&auto=format&fit=crop'
         });
       }
       setSubmitted(false);
       onClose();
-    }, 600);
+    }, 400);
   };
 
   const titles = {

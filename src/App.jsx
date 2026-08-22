@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import MyTrips from './pages/MyTrips';
 import LiveItinerary from './pages/LiveItinerary';
 import NewTrip from './pages/NewTrip';
+import Explore from './pages/Explore';
 import { reactAuth } from './lib/auth';
 
 function RootRedirect() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/itinerary" element={<LiveItinerary />} />
         <Route path="/live-itinerary" element={<LiveItinerary />} />
         <Route path="/new-trip" element={<NewTrip />} />
+        <Route path="/explore" element={<Explore />} />
       </Routes>
     </Router>
   );

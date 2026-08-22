@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import logoImg from '../../assets/logo.png';
+import NotificationsModal from '../common/NotificationsModal';
+import SettingsModal from '../common/SettingsModal';
 import { 
   Home, 
   Compass, 
@@ -19,6 +22,10 @@ const Sidebar = ({ onOpenNewTrip }) => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Modal open states
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
   const navItems = [
     { name: 'Home', icon: Home, path: '/dashboard' },
     { name: 'My Trips', icon: Luggage, path: '/trips' },
@@ -27,11 +34,7 @@ const Sidebar = ({ onOpenNewTrip }) => {
   ];
 
   const handleNav = (path) => {
-    if (path === '/dashboard') {
-      navigate('/dashboard');
-    } else if (path === '/trips') {
-      navigate('/trips');
-    }
+    navigate(path);
     setMobileOpen(false);
   };
 
@@ -41,14 +44,8 @@ const Sidebar = ({ onOpenNewTrip }) => {
     <>
       {/* Mobile Hamburger Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#111219] border-b border-white/5 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gray-700/60 border border-white/10 flex items-center justify-center text-xs font-mono font-bold text-gray-300">
-            img
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-white tracking-tight">GlobalTrotter</div>
-            <div className="text-[10px] text-gray-400 tracking-wide uppercase">Elite Explorer</div>
-          </div>
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
+          <img src={logoImg} alt="GlobalTrotter" className="h-7 w-auto object-contain" />
         </div>
         <button 
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -74,10 +71,8 @@ const Sidebar = ({ onOpenNewTrip }) => {
       `}>
         <div className="space-y-6">
           {/* Brand Logo Header */}
-          <div className="flex items-center justify-between px-1 pt-1">
-            <h1 className="text-lg font-serif font-bold text-white tracking-tight">
-              GlobalTrotter
-            </h1>
+          <div className="flex items-center px-1 pt-1 cursor-pointer" onClick={() => navigate('/dashboard')}>
+            <img src={logoImg} alt="GlobalTrotter" className="h-9 w-auto max-w-[200px] object-contain hover:opacity-90 transition-opacity" />
           </div>
 
           {/* User Profile Card (Reference screenshot) */}
@@ -94,7 +89,7 @@ const Sidebar = ({ onOpenNewTrip }) => {
           {/* New Trip CTA */}
           <button
             onClick={() => {
-              if (onOpenNewTrip) { onOpenNewTrip(); } else { navigate('/new-trip'); }
+              if (onOpenNewTrip) { onOpenNewTrip(); } else { navigate('/new-trip', { state: { from: location.pathname } }); }
               setMobileOpen(false);
             }}
             className="w-full bg-[#009688] hover:bg-[#008477] text-white py-2.5 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-teal-950/40 hover:shadow-teal-900/60 active:scale-[0.98] text-xs cursor-pointer"
@@ -114,7 +109,7 @@ const Sidebar = ({ onOpenNewTrip }) => {
                   key={item.name}
                   onClick={() => handleNav(item.path)}
                   className={`
-                    w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 relative text-left group
+                    w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 relative text-left group cursor-pointer
                     ${isActive 
                       ? 'bg-[#182329]/90 text-[#14b8a6] border-r-2 border-[#009688]' 
                       : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.03]'
@@ -135,21 +130,34 @@ const Sidebar = ({ onOpenNewTrip }) => {
         {/* Bottom Section */}
         <div className="space-y-1 pt-4 border-t border-white/5">
           <button 
-            onClick={() => setMobileOpen(false)}
-            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left"
+            onClick={() => { setShowNotifications(true); setMobileOpen(false); }}
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left cursor-pointer group"
           >
-            <Bell size={16} />
-            <span>Notifications</span>
+            <div className="flex items-center gap-3">
+              <Bell size={16} className="text-gray-400 group-hover:text-gray-200 transition" />
+              <span>Notifications</span>
+            </div>
+            <span className="w-2 h-2 rounded-full bg-[#009688] shadow-[0_0_6px_#009688]" />
           </button>
           <button 
-            onClick={() => setMobileOpen(false)}
-            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left"
+            onClick={() => { setShowSettings(true); setMobileOpen(false); }}
+            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left cursor-pointer group"
           >
-            <Settings size={16} />
+            <Settings size={16} className="text-gray-400 group-hover:text-gray-200 transition" />
             <span>Settings</span>
           </button>
         </div>
       </aside>
+
+      {/* Global Modals Triggered From Sidebar */}
+      <NotificationsModal 
+        isOpen={showNotifications} 
+        onClose={() => setShowNotifications(false)} 
+      />
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+      />
     </>
   );
 };

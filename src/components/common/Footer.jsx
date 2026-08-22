@@ -1,11 +1,12 @@
 import React from 'react';
+import logoImg from '../../assets/logo.png';
 
 const Footer = () => {
   return (
     <footer className="w-full border-t border-white/5 bg-[#0b0c10] py-8 px-4 sm:px-8 mt-12">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-        <div className="font-serif font-bold text-base text-white tracking-tight">
-          GlobalTrotter
+        <div className="flex items-center gap-2">
+          <img src={logoImg} alt="GlobalTrotter" className="h-8 w-auto object-contain rounded-lg" />
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-6">
@@ -24,3 +25,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

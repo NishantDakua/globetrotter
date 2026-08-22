@@ -5,6 +5,7 @@ import AuthInput from '../components/AuthInput';
 import PasswordInput from '../components/PasswordInput';
 import GoogleButton from '../components/GoogleButton';
 import { auth, reactAuth } from '../lib/auth';
+import logoImg from '../assets/logo.png';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ const Register = () => {
   return (
     <AuthLayout>
       <div className="w-full max-w-[420px] mx-auto">
-        <h2 className="text-xl font-semibold text-blue-300 tracking-wide mb-6">GlobeTrotter</h2>
+        <img src={logoImg} alt="GlobalTrotter" className="h-12 w-auto object-contain mb-6 rounded-xl" />
         
         <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">Begin Your Journey</h1>
         <p className="text-sm text-gt-text-light mb-8 leading-relaxed">
