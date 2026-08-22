@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Calendar, MapPin, Check, Compass, Plus, Luggage } from 'lucide-react';
 
 const TripModal = ({ type, data, isOpen, onClose, onSubmit }) => {
   // Form states for New Trip / Edit
-  const [title, setTitle] = useState(data?.title || '');
-  const [destination, setDestination] = useState(data?.destination || '');
+  const [title, setTitle] = useState('');
+  const [destination, setDestination] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setTitle(data?.title || '');
+    setDestination(data?.destination || '');
+    setStartDate('');
+    setEndDate('');
+    setSubmitted(false);
+  }, [isOpen, data?.title, data?.destination]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
