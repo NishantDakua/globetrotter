@@ -7,18 +7,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        'gt-bg': '#0f172a', // Dark navy background
-        'gt-input': '#1e293b', // Dark slate input
-        'gt-border': '#334155', // Subtle border
-        'gt-primary': '#3b82f6', // Blue primary accent
-        'gt-primary-hover': '#2563eb', // Hover state
-        'gt-text-light': '#94a3b8', // Small supporting description
-        'gt-card': 'rgba(30, 41, 59, 0.7)', // Glassmorphism card bg
+        'gt-dark': '#0c0e12',
+        'gt-surface': '#12151c',
+        'gt-input': '#10131a',
+        'gt-border': 'rgba(255, 255, 255, 0.08)',
+        'gt-border-hover': 'rgba(255, 255, 255, 0.16)',
+        'gt-teal': '#00a884',
+        'gt-teal-hover': '#009272',
+        'gt-tab-active': '#1c2230',
+        'gt-muted': '#8b92a4',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
       },
     },
   },
   plugins: [],
 }
+// Trigger rebuild

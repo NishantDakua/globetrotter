@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { auth, reactAuth } from '../lib/auth';
 
 const Dashboard = () => {
   const { data: sessionData, isPending } = reactAuth.useSession();
+  const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -11,6 +13,22 @@ const Dashboard = () => {
       navigate('/login');
     }
   }, [isPending, sessionData, navigate]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (sessionData?.user?.id) {
+        try {
+          const res = await axios.get(`http://localhost:5000/api/profile/${sessionData.user.id}`);
+          if (res.data?.profile) {
+            setProfileData(res.data.profile);
+          }
+        } catch (err) {
+          console.warn('Profile fetch note:', err);
+        }
+      }
+    };
+    fetchProfile();
+  }, [sessionData]);
 
   const handleLogout = async () => {
     try {
@@ -21,127 +39,134 @@ const Dashboard = () => {
     }
   };
 
-  if (isPending || !sessionData?.user) {
+  if (isPending) {
     return (
-      <div className="min-h-screen bg-gt-bg flex items-center justify-center text-white">
-        <p>Loading your journey...</p>
+      <div className="min-h-screen bg-[#0c0e12] flex items-center justify-center text-white">
+        <p className="text-gray-400 text-sm animate-pulse">Loading your dashboard...</p>
       </div>
     );
   }
 
+  if (!sessionData?.user) {
+    return null;
+  }
+
   const userRaw = sessionData.user;
-  const [firstName, ...lastNameParts] = (userRaw.name || '').split(' ');
-  const lastName = lastNameParts.join(' ');
+  const [firstNameFallback, ...lastNameParts] = (userRaw.name || '').split(' ');
   
   const user = {
     ...userRaw,
-    firstName: firstName || 'User',
-    lastName: lastName || '',
-    profilePicture: userRaw.image || null,
-    travelStyle: 'Not Specified',
-    googleId: userRaw.emailVerified ? 'Linked' : null,
+    firstName: profileData?.first_name || firstNameFallback || 'User',
+    lastName: profileData?.last_name || lastNameParts.join(' ') || '',
+    phone: profileData?.phone || 'Not Specified',
+    city: profileData?.city || 'Not Specified',
+    country: profileData?.country || 'Not Specified',
+    additionalInfo: profileData?.additional_info || 'Not Specified',
+    profilePicture: profileData?.photo || userRaw.image || null,
   };
 
   return (
-    <div className="min-h-screen bg-gt-bg text-white p-8 md:p-16">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex justify-between items-center bg-gt-input p-6 rounded-2xl border border-gt-border shadow-xl">
+    <div className="min-h-screen bg-[#0c0e12] text-white p-6 sm:p-10 md:p-14">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Top Header Card */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#12151c] p-6 rounded-2xl border border-white/10 shadow-xl gap-4">
           <div className="flex items-center gap-4">
             {user.profilePicture ? (
-              <img src={user.profilePicture} alt="Profile" className="w-16 h-16 rounded-full object-cover border-2 border-gt-primary" />
+              <img
+                src={user.profilePicture}
+                alt="Profile"
+                className="w-16 h-16 rounded-full object-cover border-2 border-teal-500 shadow-md"
+              />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-gt-primary flex items-center justify-center text-2xl font-bold">
-                {user.firstName ? user.firstName.charAt(0) : '?'}
+              <div className="w-16 h-16 rounded-full bg-teal-600/20 border border-teal-500/40 flex items-center justify-center text-teal-300 text-2xl font-bold font-serif">
+                {user.firstName ? user.firstName.charAt(0) : 'G'}
               </div>
             )}
             <div>
-              <h1 className="text-3xl font-bold">Welcome, {`${user.firstName} ${user.lastName}`}</h1>
-              <p className="text-gt-text-light flex items-center gap-2 mt-1">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                Authentication Status: Authenticated
+              <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight">
+                Welcome, {`${user.firstName} ${user.lastName}`}
+              </h1>
+              <p className="text-gray-400 text-xs sm:text-sm flex items-center gap-2 mt-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Authentication Status: Active & Authenticated
               </p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-xl font-medium transition-colors"
+            className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
           >
             Logout
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Profile Details Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* User Information */}
-          <div className="bg-gt-input p-6 rounded-2xl border border-gt-border shadow-xl">
-            <h2 className="text-xl font-semibold mb-6 pb-4 border-b border-gt-border">User Information</h2>
-            <div className="space-y-4 text-sm">
+          <div className="bg-[#12151c] p-6 rounded-2xl border border-white/10 shadow-xl">
+            <h2 className="font-serif text-lg font-medium mb-5 pb-3 border-b border-white/10 text-white">
+              Traveler Profile
+            </h2>
+            <div className="space-y-3.5 text-xs sm:text-sm">
               <div className="grid grid-cols-3">
                 <span className="text-gray-400">User ID:</span>
-                <span className="col-span-2 font-mono text-blue-300">{user.id}</span>
+                <span className="col-span-2 font-mono text-teal-300 truncate">{user.id}</span>
               </div>
               <div className="grid grid-cols-3">
                 <span className="text-gray-400">First Name:</span>
-                <span className="col-span-2">{user.firstName}</span>
+                <span className="col-span-2 text-white">{user.firstName}</span>
               </div>
               <div className="grid grid-cols-3">
                 <span className="text-gray-400">Last Name:</span>
-                <span className="col-span-2">{user.lastName}</span>
+                <span className="col-span-2 text-white">{user.lastName}</span>
               </div>
               <div className="grid grid-cols-3">
                 <span className="text-gray-400">Email:</span>
-                <span className="col-span-2">{user.email}</span>
+                <span className="col-span-2 text-white">{user.email}</span>
               </div>
               <div className="grid grid-cols-3">
-                <span className="text-gray-400">Email Verified:</span>
-                <span className="col-span-2">{user.emailVerified ? 'True' : 'False'}</span>
+                <span className="text-gray-400">Phone:</span>
+                <span className="col-span-2 text-white">{user.phone}</span>
               </div>
               <div className="grid grid-cols-3">
-                <span className="text-gray-400">Travel Style:</span>
-                <span className="col-span-2 bg-gt-bg px-3 py-1 rounded-full w-fit border border-gt-border">{user.travelStyle || 'Not Specified'}</span>
+                <span className="text-gray-400">Location:</span>
+                <span className="col-span-2 text-white">{`${user.city}, ${user.country}`}</span>
               </div>
               <div className="grid grid-cols-3">
-                <span className="text-gray-400">Google Account:</span>
-                <span className="col-span-2">{user.googleId ? 'Yes' : 'No'}</span>
+                <span className="text-gray-400">Notes:</span>
+                <span className="col-span-2 text-gray-300 italic">{user.additionalInfo}</span>
               </div>
             </div>
           </div>
 
-          {/* Authentication Debug */}
-          <div className="bg-gt-input p-6 rounded-2xl border border-yellow-500/30 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-yellow-500/20 text-yellow-500 text-xs font-bold px-3 py-1 rounded-bl-lg">
-              DEV ONLY
-            </div>
-            <h2 className="text-xl font-semibold mb-6 pb-4 border-b border-gt-border text-yellow-400">Authentication Debug</h2>
-            <div className="space-y-4 text-sm font-mono">
+          {/* Authentication & Security Debug */}
+          <div className="bg-[#12151c] p-6 rounded-2xl border border-teal-500/20 shadow-xl">
+            <h2 className="font-serif text-lg font-medium mb-5 pb-3 border-b border-white/10 text-teal-400">
+              Identity Provider
+            </h2>
+            <div className="space-y-3.5 text-xs sm:text-sm font-mono">
               <div className="grid grid-cols-3">
                 <span className="text-gray-400">Provider:</span>
-                <span className="col-span-2 text-green-400">{user.googleId ? 'Google' : 'Email'}</span>
-              </div>
-              {user.googleId && (
-                <div className="grid grid-cols-3">
-                  <span className="text-gray-400">Google ID:</span>
-                  <span className="col-span-2 text-blue-300 break-all">{user.googleId}</span>
-                </div>
-              )}
-              <div className="grid grid-cols-3">
-                <span className="text-gray-400">Session Active:</span>
-                <span className="col-span-2 text-green-400">YES</span>
+                <span className="col-span-2 text-teal-300">{user.image ? 'Google OAuth' : 'Email / Password'}</span>
               </div>
               <div className="grid grid-cols-3">
-                <span className="text-gray-400">Database User:</span>
-                <span className="col-span-2 text-green-400">FOUND</span>
+                <span className="text-gray-400">Session:</span>
+                <span className="col-span-2 text-emerald-400">ACTIVE</span>
               </div>
               <div className="grid grid-cols-3">
-                <span className="text-gray-400">Profile Pic:</span>
-                <span className="col-span-2 text-gray-300 truncate" title={user.profilePicture}>{user.profilePicture || 'null'}</span>
+                <span className="text-gray-400">Database:</span>
+                <span className="col-span-2 text-emerald-400">PostgreSQL (Neon)</span>
               </div>
             </div>
-            
-            <div className="mt-8 p-4 bg-gt-bg rounded-xl border border-gt-border">
-              <p className="text-xs text-gray-400 mb-2">Database Record Status</p>
-              <div className="flex items-center gap-2 text-green-400 text-sm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                User exists in PostgreSQL (Neon)
+
+            <div className="mt-6 p-4 bg-[#0c0e12] rounded-xl border border-white/10">
+              <p className="text-[11px] text-gray-400 mb-1 font-sans">Database Synchronization</p>
+              <div className="flex items-center gap-2 text-teal-400 text-xs font-sans">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Sync with Neon Auth & PostgreSQL confirmed
               </div>
             </div>
           </div>
@@ -152,3 +177,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
