@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { X, Calendar, MapPin, Check, Compass, Plus, Luggage } from 'lucide-react';
 
 const TripModal = ({ type, data, isOpen, onClose, onSubmit }) => {
-  if (!isOpen) return null;
-
   // Form states for New Trip / Edit
   const [title, setTitle] = useState(data?.title || '');
   const [destination, setDestination] = useState(data?.destination || '');
@@ -37,6 +35,8 @@ const TripModal = ({ type, data, isOpen, onClose, onSubmit }) => {
     'live-itinerary': `Live Itinerary: ${data?.title || 'Kyoto Autumn Retreat'}`,
     'review-journal': `Travel Journal: ${data?.title || 'Past Adventure'}`
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">

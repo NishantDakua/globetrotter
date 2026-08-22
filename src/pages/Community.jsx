@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, reactAuth } from '../lib/auth';
+import { buildTrip } from '../lib/tripsStore';
 import { 
   Home, 
   Map, 
@@ -133,6 +134,67 @@ const Community = () => {
     },
   ]);
 
+  // Load and manage public trips from localStorage
+  const [localPublicTrips, setLocalPublicTrips] = useState([]);
+
+  useEffect(() => {
+    const localTrips = [];
+    const currentTripRaw = localStorage.getItem('globetrotter_currently_exploring');
+    if (currentTripRaw) {
+      try {
+        const parsed = JSON.parse(currentTripRaw);
+        if (parsed && parsed.isPublic) {
+          localTrips.push(parsed);
+        }
+      } catch (e) {}
+    }
+    const upcomingTripsRaw = localStorage.getItem('globetrotter_upcoming_trips');
+    if (upcomingTripsRaw) {
+      try {
+        const parsed = JSON.parse(upcomingTripsRaw);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(t => {
+            if (t.isPublic) {
+              localTrips.push(t);
+            }
+          });
+        }
+      } catch (e) {}
+    }
+    setLocalPublicTrips(localTrips);
+  }, []);
+
+  // Remove local trip from public community feed
+  const handleRemoveFromPublic = (tripId) => {
+    const currentTripRaw = localStorage.getItem('globetrotter_currently_exploring');
+    if (currentTripRaw) {
+      try {
+        const parsed = JSON.parse(currentTripRaw);
+        if (parsed && parsed.id === tripId) {
+          parsed.isPublic = false;
+          localStorage.setItem('globetrotter_currently_exploring', JSON.stringify(parsed));
+        }
+      } catch (e) {}
+    }
+    const upcomingTripsRaw = localStorage.getItem('globetrotter_upcoming_trips');
+    if (upcomingTripsRaw) {
+      try {
+        const parsed = JSON.parse(upcomingTripsRaw);
+        if (Array.isArray(parsed)) {
+          const updated = parsed.map(t => {
+            if (t.id === tripId) {
+              return { ...t, isPublic: false };
+            }
+            return t;
+          });
+          localStorage.setItem('globetrotter_upcoming_trips', JSON.stringify(updated));
+        }
+      } catch (e) {}
+    }
+    setLocalPublicTrips(prev => prev.filter(t => t.id !== tripId));
+    showToast('Trip removed from public feed');
+  };
+
   // Load user details from Neon Auth Session
   useEffect(() => {
     if (sessionData?.user) {
@@ -232,9 +294,53 @@ const Community = () => {
     showToast('Comment posted!');
   };
 
-  // Copy itinerary mock helper
+  // State for copying a trip modal
+  const [copyTripModal, setCopyTripModal] = useState({ isOpen: false, post: null, startDate: '', endDate: '' });
+
+  // Handle the confirmation of copying a trip with dates
+  const handleConfirmCopyTrip = (e) => {
+    e.preventDefault();
+    const { post, startDate, endDate } = copyTripModal;
+    if (!post || !startDate || !endDate) return;
+
+    if (new Date(startDate) > new Date(endDate)) {
+      showToast('Return date cannot be before departure date', 'error');
+      return;
+    }
+
+    try {
+      const newTrip = buildTrip({
+        title: post.title,
+        destination: post.itinerary.destination,
+        departureDate: startDate,
+        returnDate: endDate,
+        coverImage: post.image
+      });
+
+      const raw = localStorage.getItem('globetrotter_upcoming_trips');
+      let upcoming = [];
+      if (raw) {
+        upcoming = JSON.parse(raw);
+      }
+      upcoming = [newTrip, ...upcoming];
+      localStorage.setItem('globetrotter_upcoming_trips', JSON.stringify(upcoming));
+
+      setCopyTripModal({ isOpen: false, post: null, startDate: '', endDate: '' });
+      showToast(`Successfully copied "${post.title}" to My Trips!`);
+    } catch (err) {
+      console.error(err);
+      showToast('Error copying trip', 'error');
+    }
+  };
+
+  // Copy itinerary - trigger date collection modal
   const handleCopyTrip = (post) => {
-    showToast(`"${post.title}" copied! (My Trips page will be integrated by your teammate)`);
+    setCopyTripModal({
+      isOpen: true,
+      post,
+      startDate: '',
+      endDate: ''
+    });
   };
 
   // Notifications helpers
@@ -248,8 +354,38 @@ const Community = () => {
     showToast('All notifications marked as read');
   };
 
+  // Merge static community posts + local public user trips
+  const allPosts = [
+    ...localPublicTrips.map(trip => ({
+      id: trip.id,
+      isPublic: true,
+      isUserTrip: true, // Identify as user's own trip
+      user: {
+        name: userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'Alex Explorer',
+        avatar: userProfile ? `${userProfile.firstName.charAt(0)}${userProfile.lastName.charAt(0)}` : 'AE',
+        color: 'bg-teal-600 border border-teal-500/30',
+        location: trip.destination,
+        time: 'Just now',
+      },
+      title: trip.title,
+      description: `Check out my travel itinerary for ${trip.destination}! Dates: ${trip.dates || 'TBD'}. Currently sharing this trip with the GlobeTrotter community.`,
+      image: trip.image,
+      likes: 0,
+      likedByUser: false,
+      comments: [],
+      itinerary: {
+        destination: trip.destination,
+        duration: trip.totalDays ? `${trip.totalDays} Days` : 'Multi-day',
+        budget: '$500',
+        stops: [trip.destination],
+        activities: ['Sightseeing & landmarks', 'Exploring local attractions'],
+      }
+    })),
+    ...posts
+  ];
+
   // Filtering posts based on search query AND making sure only public trips are shown
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = allPosts.filter(post => {
     if (!post.isPublic) return false; // Only show public trips from users
 
     const query = searchQuery.toLowerCase();
@@ -597,18 +733,28 @@ const Community = () => {
                       <article key={post.id} className="bg-[#12131d] border border-[#212338] rounded-2xl p-5 shadow-xl space-y-4 hover:border-[#303350] transition-colors">
                         
                         {/* Post Header */}
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${post.user.color || 'bg-slate-700'}`}>
-                            {post.user.avatar}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${post.user.color || 'bg-slate-700'}`}>
+                              {post.user.avatar}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-sm text-white">{post.user.name}</h3>
+                              <p className="text-xs text-slate-400 font-light flex items-center gap-1.5 mt-0.5">
+                                <span>{post.user.location}</span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+                                <span>{post.user.time}</span>
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-sm text-white">{post.user.name}</h3>
-                            <p className="text-xs text-slate-400 font-light flex items-center gap-1.5 mt-0.5">
-                              <span>{post.user.location}</span>
-                              <span className="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
-                              <span>{post.user.time}</span>
-                            </p>
-                          </div>
+                          {post.isUserTrip && (
+                            <button
+                              onClick={() => handleRemoveFromPublic(post.id)}
+                              className="text-[10px] font-semibold text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/50 bg-red-500/5 hover:bg-red-500/10 px-2.5 py-1.5 rounded-xl transition-all cursor-pointer"
+                            >
+                              Remove from Public
+                            </button>
+                          )}
                         </div>
 
                         {/* Post Body */}
@@ -807,6 +953,69 @@ const Community = () => {
         </div>
       </div>
 
+      {copyTripModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in text-slate-200">
+          <div className="bg-[#141622] border border-white/10 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Copy size={16} className="text-[#009b86]" />
+                <span>Copy Trip Details</span>
+              </h3>
+              <button 
+                onClick={() => setCopyTripModal(prev => ({ ...prev, isOpen: false, post: null }))}
+                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-xs text-slate-400">Specify dates for copying <strong>"{copyTripModal.post?.title}"</strong> to your trips list.</p>
+            </div>
+
+            <form onSubmit={handleConfirmCopyTrip} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-medium text-gray-300">Start Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={copyTripModal.startDate}
+                    onChange={(e) => setCopyTripModal(prev => ({ ...prev, startDate: e.target.value }))}
+                    className="w-full bg-[#0c0d12] border border-[#212338] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-[#009b86]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-medium text-gray-300">End Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={copyTripModal.endDate}
+                    onChange={(e) => setCopyTripModal(prev => ({ ...prev, endDate: e.target.value }))}
+                    className="w-full bg-[#0c0d12] border border-[#212338] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-[#009b86]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setCopyTripModal(prev => ({ ...prev, isOpen: false, post: null }))}
+                  className="px-4 py-2 rounded-xl text-gray-300 hover:text-white bg-transparent hover:bg-white/5 border border-white/10 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-white bg-[#009b86] hover:bg-[#008674] transition shadow-lg shadow-teal-950/50 cursor-pointer font-semibold"
+                >
+                  Confirm Copy
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

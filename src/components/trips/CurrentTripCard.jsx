@@ -1,7 +1,7 @@
 import React from 'react';
-import { MapPin, ArrowRight, Edit3, Repeat, Trash2 } from 'lucide-react';
+import { MapPin, ArrowRight, Edit3, Repeat, Trash2, Globe } from 'lucide-react';
 
-const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTrip, onDelete }) => {
+const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTrip, onDelete, onTogglePublic }) => {
   const {
     destination = "Kyoto, Japan",
     title = "Kyoto Autumn Retreat",
@@ -25,10 +25,18 @@ const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTri
         {/* Left Column - Trip Details */}
         <div className="p-6 md:p-8 flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            {/* Destination Pill */}
-            <div className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-200 bg-white/[0.08] backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-              <MapPin size={14} className="text-[#14b8a6]" />
-              <span>{destination}</span>
+            {/* Destination Pill & Public status pill */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-200 bg-white/[0.08] backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                <MapPin size={14} className="text-[#14b8a6]" />
+                <span>{destination}</span>
+              </div>
+              {trip?.isPublic && (
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-teal-500/90 px-3 py-1.5 rounded-full shadow-lg">
+                  <Globe size={12} />
+                  <span>Public</span>
+                </div>
+              )}
             </div>
 
             {/* Title & Dates */}
@@ -71,16 +79,22 @@ const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTri
               className="w-full bg-transparent hover:bg-teal-500/10 border border-teal-500/40 text-teal-300 hover:text-teal-200 py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer"
             >
               <Edit3 size={16} />
-              <span>Edit Planner</span>
+              <span>Edit Trips</span>
             </button>
 
-            <button
-              onClick={onChangeTrip}
-              className="w-full bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer"
-            >
-              <Repeat size={16} />
-              <span>Change Trip</span>
-            </button>
+            {onTogglePublic && (
+              <button
+                onClick={() => onTogglePublic(trip)}
+                className={`w-full py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer border ${
+                  trip?.isPublic
+                    ? 'bg-teal-950/40 hover:bg-teal-950/60 border-teal-500/40 text-teal-300 hover:text-teal-200'
+                    : 'bg-transparent hover:bg-white/5 border-white/10 text-gray-300 hover:text-white'
+                }`}
+              >
+                <Globe size={16} className={trip?.isPublic ? 'text-teal-400' : 'text-gray-400'} />
+                <span>{trip?.isPublic ? 'Remove from Public' : 'Make Public'}</span>
+              </button>
+            )}
 
             {onDelete && (
               <button
