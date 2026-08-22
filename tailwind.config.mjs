@@ -7,6 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        'gt-dark': '#0c0e12',
+        'gt-surface': '#12151c',
+        'gt-input': '#10131a',
+        'gt-border': 'rgba(255, 255, 255, 0.08)',
+        'gt-border-hover': 'rgba(255, 255, 255, 0.16)',
+        'gt-teal': '#00a884',
+        'gt-teal-hover': '#009272',
+        'gt-tab-active': '#1c2230',
+        'gt-muted': '#8b92a4',
         'gt-bg': '#090B0E',
         'gt-card': '#11161D',
         'gt-card-hover': '#161C26',
@@ -19,8 +28,10 @@ export default {
       fontFamily: {
         serif: ['Playfair Display', 'Georgia', 'serif'],
         sans: ['Inter', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
       },
     },
   },
   plugins: [],
 }
+// Trigger rebuild

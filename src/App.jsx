@@ -1,5 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import AuthPage from './pages/AuthPage';
+import CompleteProfile from './pages/CompleteProfile';
+import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
 import LandingPage from './pages/LandingPage';
 import { reactAuth } from './lib/auth';
 
@@ -11,7 +15,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 function RootRedirect() {
   const { data: sessionData, isPending } = reactAuth.useSession();
   if (isPending) return null;
-  return sessionData?.user ? <Navigate to="/dashboard" replace /> : <Navigate to="/register" replace />;
+  return sessionData?.user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />;
 }
 
 function LoadingFallback() {
@@ -25,14 +29,15 @@ function LoadingFallback() {
 function App() {
   return (
     <Router>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </Suspense>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<AuthPage defaultMode="login" />} />
+        <Route path="/register" element={<AuthPage defaultMode="signup" />} />
+        <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
     </Router>
   );
 }

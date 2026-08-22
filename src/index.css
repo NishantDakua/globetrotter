@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gt-bg text-white font-sans antialiased;
+    @apply bg-gt-dark text-white font-sans antialiased;
   }
 }
 
@@ -13,7 +13,7 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-gt-bg;
+  @apply bg-gt-dark;
 }
 ::-webkit-scrollbar-thumb {
   @apply bg-gt-border rounded-full;

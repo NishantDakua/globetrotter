@@ -118,21 +118,22 @@ model session {
 }
 
 model user {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String
-  email         String       @unique
+  email         String         @unique
   emailVerified Boolean
   image         String?
-  createdAt     DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime     @default(now()) @db.Timestamptz(6)
+  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime       @default(now()) @db.Timestamptz(6)
   role          String?
   banned        Boolean?
   banReason     String?
-  banExpires    DateTime?    @db.Timestamptz(6)
+  banExpires    DateTime?      @db.Timestamptz(6)
   account       account[]
   invitation    invitation[]
   member        member[]
   session       session[]
+  user_profiles user_profiles?
 
   @@schema("neon_auth")
 }
@@ -150,10 +151,166 @@ model verification {
 }
 
 model users {
-  id           String   @id
-  travel_style String?
-  created_at   DateTime @default(now())
-  updated_at   DateTime
+  id                String   @id
+  travel_style      String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  additional_info   String?
+  city              String?
+  country           String?
+  first_name        String?
+  last_name         String?
+  phone             String?
+  photo             String?
+  profile_completed Boolean  @default(false)
 
+  @@schema("public")
+}
+
+model activities {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  city_id              String                 @db.Uuid
+  name                 String                 @db.VarChar(150)
+  category             String?                @db.VarChar(50)
+  description          String?
+  cost                 Decimal?               @default(0) @db.Decimal(10, 2)
+  duration_minutes     Int?
+  image_url            String?
+  cities               cities                 @relation(fields: [city_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  trip_stop_activities trip_stop_activities[]
+
+  @@index([category], map: "idx_activities_category")
+  @@index([city_id], map: "idx_activities_city")
+  @@schema("public")
+}
+
+model cities {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String               @db.VarChar(120)
+  country            String               @db.VarChar(120)
+  region             String?              @db.VarChar(120)
+  cost_index         Int?                 @db.SmallInt
+  popularity_score   Int?                 @db.SmallInt
+  description        String?
+  image_url          String?
+  activities         activities[]
+  saved_destinations saved_destinations[]
+  trip_stops         trip_stops[]
+
+  @@unique([name, country])
+  @@index([country, region], map: "idx_cities_country_region")
+  @@index([name], map: "idx_cities_name")
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model expenses {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trip_id      String      @db.Uuid
+  trip_stop_id String?     @db.Uuid
+  category     String      @db.VarChar(30)
+  amount       Decimal     @db.Decimal(10, 2)
+  expense_date DateTime?   @db.Date
+  notes        String?
+  trips        trips       @relation(fields: [trip_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  trip_stops   trip_stops? @relation(fields: [trip_stop_id], references: [id], onUpdate: NoAction)
+
+  @@index([trip_id, category], map: "idx_expenses_category")
+  @@index([trip_id], map: "idx_expenses_trip")
+  @@schema("public")
+}
+
+model saved_destinations {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String        @db.Uuid
+  city_id       String        @db.Uuid
+  saved_at      DateTime      @default(now()) @db.Timestamptz(6)
+  cities        cities        @relation(fields: [city_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_profiles user_profiles @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, city_id])
+  @@index([city_id], map: "idx_saved_destinations_city")
+  @@index([user_id], map: "idx_saved_destinations_user")
+  @@schema("public")
+}
+
+model trip_stop_activities {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trip_stop_id   String     @db.Uuid
+  activity_id    String     @db.Uuid
+  scheduled_date DateTime?  @db.Date
+  start_time     DateTime?  @db.Time(6)
+  cost_override  Decimal?   @db.Decimal(10, 2)
+  notes          String?
+  activities     activities @relation(fields: [activity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  trip_stops     trip_stops @relation(fields: [trip_stop_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([activity_id], map: "idx_tsa_activity")
+  @@index([trip_stop_id], map: "idx_tsa_stop")
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model trip_stops {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trip_id              String                 @db.Uuid
+  city_id              String                 @db.Uuid
+  start_date           DateTime               @db.Date
+  end_date             DateTime               @db.Date
+  order_index          Int
+  notes                String?
+  expenses             expenses[]
+  trip_stop_activities trip_stop_activities[]
+  cities               cities                 @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  trips                trips                  @relation(fields: [trip_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([city_id], map: "idx_trip_stops_city")
+  @@index([trip_id, order_index], map: "idx_trip_stops_trip")
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model trips {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String        @db.Uuid
+  name            String        @db.VarChar(150)
+  description     String?
+  cover_photo_url String?
+  start_date      DateTime      @db.Date
+  end_date        DateTime      @db.Date
+  is_public       Boolean       @default(false)
+  share_token     String?       @unique @db.VarChar(64)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime      @default(now()) @db.Timestamptz(6)
+  expenses        expenses[]
+  trip_stops      trip_stops[]
+  user_profiles   user_profiles @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([share_token], map: "idx_trips_share_token")
+  @@index([user_id], map: "idx_trips_user")
+  @@schema("public")
+}
+
+model user_profiles {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id             String               @unique @db.Uuid
+  first_name          String?              @db.VarChar(120)
+  last_name           String?              @db.VarChar(120)
+  phone               String?              @db.VarChar(30)
+  city                String?              @db.VarChar(120)
+  country             String?              @db.VarChar(120)
+  language_preference String?              @default("en") @db.VarChar(10)
+  photo               String?
+  additional_info     String?
+  travel_style        String?              @db.VarChar(50)
+  profile_completed   Boolean              @default(false)
+  created_at          DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime             @default(now()) @db.Timestamptz(6)
+  saved_destinations  saved_destinations[]
+  trips               trips[]
+  user                user                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([city], map: "idx_user_profiles_city")
+  @@index([country], map: "idx_user_profiles_country")
   @@schema("public")
 }
