@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import PasswordInput from '../components/PasswordInput';
 import GoogleButton from '../components/GoogleButton';
-import axios from 'axios';
+import { auth, reactAuth } from '../lib/auth';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { data: sessionData, isPending } = reactAuth.useSession();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,6 +19,12 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isPending && sessionData?.user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isPending, sessionData, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,27 +50,28 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await axios.post(
-        'http://localhost:5000/api/auth/register',
-        {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-          travelStyle: formData.travelStyle,
-        },
-        { withCredentials: true }
-      );
+      const { data, error: authError } = await auth.signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.firstName} ${formData.lastName}`,
+      });
+      
+      if (authError) {
+        throw new Error(authError.message || 'Registration failed.');
+      }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleAuth = () => {
-    window.location.href = 'http://localhost:5000/auth/google';
+  const handleGoogleAuth = async () => {
+    await auth.signIn.social({ 
+      provider: 'google',
+      callbackURL: '/dashboard'
+    });
   };
 
   return (

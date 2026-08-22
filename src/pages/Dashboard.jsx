@@ -1,49 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { auth, reactAuth } from '../lib/auth';
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: sessionData, isPending } = reactAuth.useSession();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/auth/me', {
-          withCredentials: true,
-        });
-        if (response.data.authenticated) {
-          setUser(response.data.user);
-        } else {
-          navigate('/login');
-        }
-      } catch (error) {
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
+    if (!isPending && !sessionData?.user) {
+      navigate('/login');
+    }
+  }, [isPending, sessionData, navigate]);
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      await auth.signOut();
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
-  if (loading) {
+  if (isPending || !sessionData?.user) {
     return (
       <div className="min-h-screen bg-gt-bg flex items-center justify-center text-white">
         <p>Loading your journey...</p>
       </div>
     );
   }
+
+  const userRaw = sessionData.user;
+  const [firstName, ...lastNameParts] = (userRaw.name || '').split(' ');
+  const lastName = lastNameParts.join(' ');
+  
+  const user = {
+    ...userRaw,
+    firstName: firstName || 'User',
+    lastName: lastName || '',
+    profilePicture: userRaw.image || null,
+    travelStyle: 'Not Specified',
+    googleId: userRaw.emailVerified ? 'Linked' : null,
+  };
 
   return (
     <div className="min-h-screen bg-gt-bg text-white p-8 md:p-16">

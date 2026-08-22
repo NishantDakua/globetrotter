@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import PasswordInput from '../components/PasswordInput';
 import GoogleButton from '../components/GoogleButton';
-import axios from 'axios';
+import { auth, reactAuth } from '../lib/auth';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { data: sessionData, isPending } = reactAuth.useSession();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isPending && sessionData?.user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isPending, sessionData, navigate]);
 
   // Read URL params for Google OAuth errors
   const urlParams = new URLSearchParams(window.location.search);
@@ -33,24 +40,27 @@ const Login = () => {
     
     setLoading(true);
     try {
-      await axios.post(
-        'http://localhost:5000/api/auth/login',
-        {
-          email: formData.email,
-          password: formData.password,
-        },
-        { withCredentials: true }
-      );
+      const { data, error: authError } = await auth.signIn.email({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (authError) {
+        throw new Error(authError.message || 'Login failed.');
+      }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleAuth = () => {
-    window.location.href = 'http://localhost:5000/auth/google';
+  const handleGoogleAuth = async () => {
+    await auth.signIn.social({ 
+      provider: 'google',
+      callbackURL: '/dashboard'
+    });
   };
 
   return (
