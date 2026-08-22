@@ -45,7 +45,7 @@ const AuthPage = ({ defaultMode = 'login' }) => {
   // Auto-redirect if already authenticated
   useEffect(() => {
     if (!isPending && sessionData?.user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [isPending, sessionData, navigate]);
 
@@ -116,7 +116,7 @@ const AuthPage = ({ defaultMode = 'login' }) => {
           console.warn('Profile sync note:', apiErr.response?.data || apiErr.message);
         }
 
-        navigate('/dashboard');
+        navigate('/');
       } else {
         const { error: authError } = await auth.signIn.email({
           email: formData.email,
@@ -125,7 +125,7 @@ const AuthPage = ({ defaultMode = 'login' }) => {
 
         if (authError) throw new Error(authError.message || 'Invalid email or password.');
 
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (err) {
       setError(err.message || 'Authentication failed. Please try again.');

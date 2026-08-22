@@ -42,9 +42,9 @@ const CompleteProfile = () => {
     const intent = sessionStorage.getItem('google_auth_intent') || 'signup';
     sessionStorage.removeItem('google_auth_intent');
 
-    // If the user came here from a LOGIN flow (not signup), go straight to dashboard
+    // If the user came here from a LOGIN flow (not signup), go straight to landing page
     if (intent === 'login') {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
       return;
     }
 
@@ -54,8 +54,8 @@ const CompleteProfile = () => {
         const res = await axios.get(`${API}/api/profile/${sessionData.user.id}`);
         const profile = res.data?.profile;
         if (profile?.profile_completed) {
-          // Already completed — must be a returning user; go to dashboard
-          navigate('/dashboard', { replace: true });
+          // Already completed — must be a returning user; go to landing page
+          navigate('/', { replace: true });
           return;
         }
       } catch {
@@ -100,7 +100,7 @@ const CompleteProfile = () => {
         profileCompleted: true,
       });
 
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Failed to complete profile:', err);
       setError(err.response?.data?.error || 'Failed to save profile. Please try again.');

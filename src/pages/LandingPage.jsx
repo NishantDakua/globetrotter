@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Compass, Mountain, MapPin, ArrowRight, ShieldCheck, Globe, UserCheck } from 'lucide-react';
+import { Search, Compass, Mountain, MapPin, ArrowRight, ShieldCheck, Globe, UserCheck, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 import LazyVideo from '../components/LazyVideo';
+import { auth } from '../lib/auth';
 
 const itineraries = [
   {
@@ -32,10 +33,21 @@ const itineraries = [
 ];
 
 export default function LandingPage() {
+  const { data: sessionData, isPending } = auth.useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
 
   const categories = ['Culture', 'Adventure', 'Relaxation'];
+
+  const user = sessionData?.user;
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+    } catch (err) {
+      console.error('Sign out failed:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gt-bg text-white font-sans antialiased selection:bg-gt-teal selection:text-black">
@@ -66,18 +78,58 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:inline-block"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="bg-gt-teal hover:bg-gt-teal-hover text-slate-950 font-semibold px-5 py-2.5 rounded-full text-sm transition duration-200 shadow-lg shadow-gt-teal/20"
-            >
-              Plan a Trip
-            </Link>
+            {!isPending && user ? (
+              <div className="flex items-center gap-3 bg-slate-900/80 border border-slate-800 backdrop-blur-md pl-3 pr-2 py-1.5 rounded-full shadow-lg">
+                {user.image ? (
+                  <img
+                    src={user.image}
+                    alt={user.name || user.email}
+                    className="w-8 h-8 rounded-full object-cover border border-gt-teal"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gt-teal/20 border border-gt-teal text-gt-teal flex items-center justify-center font-semibold text-xs uppercase">
+                    {(user.name || user.email || 'U').charAt(0)}
+                  </div>
+                )}
+                <div className="hidden sm:flex flex-col text-left text-xs">
+                  <span className="font-semibold text-white truncate max-w-[120px]">
+                    {user.name || 'Traveler'}
+                  </span>
+                  <span className="text-[10px] text-gray-400 truncate max-w-[130px]">
+                    {user.email}
+                  </span>
+                </div>
+                <Link
+                  to="/settings"
+                  className="p-1.5 text-gray-400 hover:text-white hover:bg-slate-800 rounded-full transition"
+                  title="Settings"
+                >
+                  <SettingsIcon className="w-4 h-4" />
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-slate-800 rounded-full transition"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-gray-300 hover:text-white transition hidden sm:inline-block"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-gt-teal hover:bg-gt-teal-hover text-slate-950 font-semibold px-5 py-2.5 rounded-full text-sm transition duration-200 shadow-lg shadow-gt-teal/20"
+                >
+                  Plan a Trip
+                </Link>
+              </>
+            )}
           </div>
         </header>
 
@@ -93,10 +145,16 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/register"
+              to={user ? "#adventures" : "/register"}
+              onClick={(e) => {
+                if (user) {
+                  e.preventDefault();
+                  document.getElementById('adventures')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
               className="bg-gt-teal hover:bg-gt-teal-hover text-slate-950 font-semibold px-8 py-3.5 rounded-xl transition duration-200 shadow-xl shadow-gt-teal/25"
             >
-              Start Planning
+              {user ? "Explore Itineraries" : "Start Planning"}
             </Link>
             <button
               onClick={() => {
@@ -159,7 +217,7 @@ export default function LandingPage() {
             </p>
           </div>
           <Link
-            to="/register"
+            to={user ? "#" : "/register"}
             className="text-gt-teal text-sm font-medium hover:underline inline-flex items-center gap-1.5 self-start sm:self-auto"
           >
             View All <ArrowRight className="w-4 h-4" />
@@ -197,7 +255,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between border-t border-gt-border/80 pt-4 text-xs">
                   <span className="text-gray-400 font-medium">{item.duration}</span>
                   <Link
-                    to="/register"
+                    to={user ? "#" : "/register"}
                     className="text-gt-teal font-medium hover:underline flex items-center gap-1"
                   >
                     View Itinerary
