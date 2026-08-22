@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plane, Bed, Landmark, Ticket, MapPin, MoreVertical, Edit3, Trash2 } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
 
 const iconMap = {
   plane: Plane,
@@ -10,6 +11,7 @@ const iconMap = {
 };
 
 const ActivityCard = ({ id, time, timezone = "JST", title, description, tag, cost, iconType, onEdit, onDelete }) => {
+  const { formatPrice } = useSettings();
   const IconComponent = iconMap[iconType] || Landmark;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -101,7 +103,7 @@ const ActivityCard = ({ id, time, timezone = "JST", title, description, tag, cos
 
             {cost > 0 && (
               <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-lg">
-                ${cost}
+                {formatPrice(cost)}
               </span>
             )}
           </div>

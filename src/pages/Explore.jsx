@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/trips/Sidebar';
 import Footer from '../components/common/Footer';
 import { loadWishlist, saveWishlist } from '../lib/wishlistStore';
+import { useSettings } from '../context/SettingsContext';
 import { 
   Search, 
   Heart, 
@@ -107,6 +108,7 @@ const CATEGORIES = [
 
 const Explore = () => {
   const navigate = useNavigate();
+  const { t } = useSettings();
 
   // Search Query state
   const [searchQuery, setSearchQuery] = useState('');
@@ -222,7 +224,7 @@ const Explore = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search destinations, experiences..."
+                  placeholder={t('searchPlaceholder')}
                   className="w-full bg-[#141622] border border-white/10 rounded-xl pl-11 pr-10 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#009688] transition shadow-lg"
                 />
                 {searchQuery && (
@@ -350,7 +352,7 @@ const Explore = () => {
                     onClick={() => handleExploreTrip(FEATURED_DESTINATION)}
                     className="bg-[#67d9c9] hover:bg-[#52cbb9] text-[#0b0c10] font-semibold text-xs sm:text-sm px-5 py-3 rounded-xl shadow-lg shadow-teal-950/50 hover:shadow-teal-900/60 transition-all flex items-center gap-2 cursor-pointer group/btn"
                   >
-                    <span>Explore Trip</span>
+                    <span>{t('exploreTrip')}</span>
                     <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
 
@@ -369,7 +371,7 @@ const Explore = () => {
                       className={wishlist.some(item => item.id === FEATURED_DESTINATION.id) ? 'fill-rose-500 text-rose-400' : ''} 
                     />
                     <span>
-                      {wishlist.some(item => item.id === FEATURED_DESTINATION.id) ? 'In Wishlist' : 'Add to Wishlist'}
+                      {wishlist.some(item => item.id === FEATURED_DESTINATION.id) ? t('inWishlist') : t('addToWishlist')}
                     </span>
                   </button>
                 </div>
@@ -383,7 +385,7 @@ const Explore = () => {
               <div className="flex items-end justify-between border-b border-white/5 pb-3">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-tight">
-                    Editor's Picks
+                    {t('editorsPicks')}
                   </h2>
                   <p className="text-xs text-gray-400 mt-1">
                     Handcrafted experiences for this season.

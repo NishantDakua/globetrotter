@@ -10,9 +10,11 @@ import TripModal from '../components/trips/TripModal';
 import { loadWishlist, saveWishlist } from '../lib/wishlistStore';
 import { ChevronRight, Heart, MapPin, Star, Clock, ArrowRight, Trash2 } from 'lucide-react';
 import { loadUpcomingTrips, saveUpcomingTrips } from '../lib/tripsStore';
+import { useSettings } from '../context/SettingsContext';
 
 const MyTrips = () => {
   const navigate = useNavigate();
+  const { t, formatPrice } = useSettings();
 
   // Currently Exploring (stays as local state — it's the active trip)
   const [currentlyExploring, setCurrentlyExploring] = useState({
@@ -121,7 +123,7 @@ const MyTrips = () => {
           {/* Upcoming Bookings */}
           <section className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-gray-300 tracking-wider uppercase">UPCOMING BOOKINGS</h3>
+              <h3 className="text-xs font-bold text-gray-300 tracking-wider uppercase">{t('upcomingBookings')}</h3>
               <span className="text-xs text-gray-500 font-medium">{upcomingTrips.length} Booked</span>
             </div>
 
@@ -155,7 +157,7 @@ const MyTrips = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Heart size={15} className="text-rose-500 fill-rose-500" />
-                <h3 className="text-xs font-bold text-gray-300 tracking-wider uppercase">MY WISHLIST</h3>
+                <h3 className="text-xs font-bold text-gray-300 tracking-wider uppercase">{t('myWishlist')}</h3>
               </div>
               <span className="text-xs text-gray-500 font-medium">{wishlistItems.length} Saved</span>
             </div>

@@ -8,6 +8,7 @@ import LiveItinerary from './pages/LiveItinerary';
 import NewTrip from './pages/NewTrip';
 import Explore from './pages/Explore';
 import { reactAuth } from './lib/auth';
+import { SettingsProvider } from './context/SettingsContext';
 
 function RootRedirect() {
   const { data: sessionData, isPending } = reactAuth.useSession();
@@ -17,22 +18,23 @@ function RootRedirect() {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<RootRedirect />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/trips" element={<MyTrips />} />
-        <Route path="/my-trips" element={<MyTrips />} />
-        <Route path="/itinerary" element={<LiveItinerary />} />
-        <Route path="/live-itinerary" element={<LiveItinerary />} />
-        <Route path="/new-trip" element={<NewTrip />} />
-        <Route path="/explore" element={<Explore />} />
-      </Routes>
-    </Router>
+    <SettingsProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/trips" element={<MyTrips />} />
+          <Route path="/my-trips" element={<MyTrips />} />
+          <Route path="/itinerary" element={<LiveItinerary />} />
+          <Route path="/live-itinerary" element={<LiveItinerary />} />
+          <Route path="/new-trip" element={<NewTrip />} />
+          <Route path="/explore" element={<Explore />} />
+        </Routes>
+      </Router>
+    </SettingsProvider>
   );
 }
 
 export default App;
-
