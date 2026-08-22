@@ -461,7 +461,7 @@ const Community = () => {
           {/* Navigation Links */}
           <nav className="flex-1 py-6 px-4 space-y-1.5 overflow-y-auto">
             <button
-              onClick={() => { navigate('/dashboard'); setIsMobileMenuOpen(false); }}
+              onClick={() => { setActiveTab('main'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all relative ${
                 activeTab === 'main' 
                   ? 'bg-[#181a26] text-white border-r-2 border-[#009b86]' 
