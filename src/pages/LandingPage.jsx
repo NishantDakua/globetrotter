@@ -71,10 +71,21 @@ export default function LandingPage() {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
-            <Link to="#" className="text-gt-teal border-b-2 border-gt-teal pb-1">Explore</Link>
-            <Link to="#" className="hover:text-white transition">Itineraries</Link>
-            <Link to="#" className="hover:text-white transition">Community</Link>
-            <Link to="#" className="hover:text-white transition">Journal</Link>
+            <Link to="/" className="text-gt-teal border-b-2 border-gt-teal pb-1">Explore</Link>
+            <a
+              href="#adventures"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('adventures')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="hover:text-white transition cursor-pointer"
+            >
+              Itineraries
+            </a>
+            <Link to="/community" className="hover:text-white transition">Community</Link>
+            <span className="text-gray-500 cursor-not-allowed flex items-center gap-1">
+              Journal <span className="text-[9px] uppercase px-1 rounded bg-white/5 font-semibold">Soon</span>
+            </span>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -156,16 +167,13 @@ export default function LandingPage() {
             >
               {user ? "Explore Itineraries" : "Start Planning"}
             </Link>
-            <button
-              onClick={() => {
-                const el = document.getElementById('adventures');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
+            <Link
+              to="/community"
               className="bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 text-white font-medium px-7 py-3.5 rounded-xl backdrop-blur-md transition duration-200 flex items-center gap-2"
             >
               <Compass className="w-4 h-4 text-gt-teal" />
               Explore Community
-            </button>
+            </Link>
           </div>
         </main>
 
