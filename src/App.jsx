@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Community from './pages/Community';
+import MyTrips from './pages/MyTrips';
 import { reactAuth } from './lib/auth';
 
 function RootRedirect() {
@@ -19,6 +20,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/community" element={<Community />} />
+        <Route path="/trips" element={<MyTrips />} />
+        <Route path="/my-trips" element={<MyTrips />} />
+        <Route path="/dashboard" element={<Navigate to="/community" replace />} />
       </Routes>
     </Router>
   );
