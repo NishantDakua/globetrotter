@@ -225,7 +225,7 @@ const NewTrip = () => {
                         value={departureDate}
                         onChange={e => { setDeparture(e.target.value); setErrors(p => ({...p, departureDate: null, returnDate: null})); }}
                         className={`${inputClass(errors.departureDate)} pl-9 [color-scheme:dark]`}
-                        min={new Date().toISOString().split('T')[0]}
+                        min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)}
                       />
                     </div>
                     {errors.departureDate && (
