@@ -412,7 +412,7 @@ const Community = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090d] text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#08090d] text-slate-100 flex flex-col md:flex-row font-sans antialiased">
       
       {/* Toast Notification Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm pointer-events-none">
@@ -435,14 +435,11 @@ const Community = () => {
         ))}
       </div>
 
-      {/* Main Container Layout */}
-      <div className="flex flex-1 relative overflow-hidden">
-        
-        {/* SIDEBAR */}
-        <Sidebar />
+      {/* SIDEBAR */}
+      <Sidebar />
 
-        {/* MAIN BODY AREA */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      {/* MAIN BODY AREA */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
           
           {/* HEADER / NAVBAR */}
           <header className="h-20 bg-[#08090d]/80 backdrop-blur-md border-b border-[#181926] px-6 flex items-center justify-between sticky top-0 z-20">
@@ -838,7 +835,6 @@ const Community = () => {
             )}
           </main>
         </div>
-      </div>
 
       {copyTripModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in text-slate-200">
