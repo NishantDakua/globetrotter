@@ -183,6 +183,20 @@ prisma
     console.error('❌ Database connection failed:', err.message);
   });
 
+// Express static serving with HTTP caching for public media assets
+app.use(
+  express.static('public', {
+    maxAge: '1y',
+    immutable: true,
+    setHeaders: (res, path) => {
+      if (path.endsWith('.mp4') || path.endsWith('.webp') || path.endsWith('.jpg') || path.endsWith('.png')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Accept-Ranges', 'bytes');
+      }
+    },
+  })
+);
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
