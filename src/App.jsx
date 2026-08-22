@@ -1,16 +1,12 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import AuthPage from './pages/AuthPage';
-import CompleteProfile from './pages/CompleteProfile';
-import Dashboard from './pages/Dashboard';
-import Settings from './pages/Settings';
 import LandingPage from './pages/LandingPage';
 import { reactAuth } from './lib/auth';
 
-// React Code Splitting: Lazy load heavy non-critical pages
-const Register = lazy(() => import('./pages/Register'));
-const Login = lazy(() => import('./pages/Login'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 function RootRedirect() {
   const { data: sessionData, isPending } = reactAuth.useSession();
@@ -29,15 +25,17 @@ function LoadingFallback() {
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<AuthPage defaultMode="login" />} />
-        <Route path="/register" element={<AuthPage defaultMode="signup" />} />
-        <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<AuthPage defaultMode="login" />} />
+          <Route path="/register" element={<AuthPage defaultMode="signup" />} />
+          <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }
