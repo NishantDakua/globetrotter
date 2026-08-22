@@ -22,7 +22,6 @@ const Sidebar = ({ onOpenNewTrip }) => {
   const navItems = [
     { name: 'Home', icon: Home, path: '/dashboard' },
     { name: 'My Trips', icon: Luggage, path: '/trips' },
-    { name: 'Explore', icon: Compass, path: '/explore' },
     { name: 'Community', icon: Users, path: '/community' },
   ];
 
