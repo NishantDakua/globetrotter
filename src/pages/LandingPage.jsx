@@ -225,7 +225,7 @@ export default function LandingPage() {
             </p>
           </div>
           <Link
-            to={user ? "#" : "/register"}
+            to={user ? "/trips" : "/login"}
             className="text-gt-teal text-sm font-medium hover:underline inline-flex items-center gap-1.5 self-start sm:self-auto"
           >
             View All <ArrowRight className="w-4 h-4" />
@@ -263,7 +263,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between border-t border-gt-border/80 pt-4 text-xs">
                   <span className="text-gray-400 font-medium">{item.duration}</span>
                   <Link
-                    to={user ? "#" : "/register"}
+                    to={user ? "/trips" : "/login"}
                     className="text-gt-teal font-medium hover:underline flex items-center gap-1"
                   >
                     View Itinerary
