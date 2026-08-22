@@ -39,26 +39,18 @@ const UpcomingTripCard = ({ trip, onEdit, onChange, onDelete }) => {
       </div>
 
       {/* Action Buttons Row */}
-      <div className="px-6 pb-6 pt-0 grid grid-cols-3 gap-2">
+      <div className="px-6 pb-6 pt-0 grid grid-cols-2 gap-3">
         <button
           onClick={() => onEdit(trip)}
-          className="bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-2.5 px-2 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
+          className="bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
         >
           <Edit3 size={14} className="text-gray-400" />
-          <span className="truncate">Edit Planner</span>
-        </button>
-
-        <button
-          onClick={() => onChange(trip)}
-          className="bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-2.5 px-2 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
-        >
-          <Repeat size={14} className="text-gray-400" />
-          <span className="truncate">Change Trip</span>
+          <span className="truncate">Edit Trips</span>
         </button>
 
         <button
           onClick={() => onDelete(trip)}
-          className="bg-transparent hover:bg-red-500/10 border border-red-500/30 text-red-400 hover:text-red-300 py-2.5 px-2 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
+          className="bg-transparent hover:bg-red-500/10 border border-red-500/30 text-red-400 hover:text-red-300 py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition text-center cursor-pointer"
         >
           <Trash2 size={14} className="text-red-400" />
           <span className="truncate">Delete</span>

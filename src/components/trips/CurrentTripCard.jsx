@@ -71,15 +71,7 @@ const CurrentTripCard = ({ trip, onViewLiveItinerary, onEditPlanner, onChangeTri
               className="w-full bg-transparent hover:bg-teal-500/10 border border-teal-500/40 text-teal-300 hover:text-teal-200 py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer"
             >
               <Edit3 size={16} />
-              <span>Edit Planner</span>
-            </button>
-
-            <button
-              onClick={onChangeTrip}
-              className="w-full bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white py-3 px-5 rounded-xl font-medium flex items-center justify-center gap-2 transition-all text-sm cursor-pointer"
-            >
-              <Repeat size={16} />
-              <span>Change Trip</span>
+              <span>Edit Trips</span>
             </button>
 
             {onDelete && (
