@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { auth } from '../../lib/auth';
 
+import logoImg from '../../assets/logo.png';
+
 const Sidebar = ({ onOpenNewTrip }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +31,6 @@ const Sidebar = ({ onOpenNewTrip }) => {
 
   const handleNav = (path) => {
     if (path === '/explore') {
-      // Explore page is yet to be created so leave as is or prevent navigation
       return;
     }
     navigate(path);
@@ -52,9 +53,11 @@ const Sidebar = ({ onOpenNewTrip }) => {
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#111219] border-b border-white/5 sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gt-teal/20 border border-gt-teal flex items-center justify-center text-gt-teal font-serif font-bold text-sm">
-            G
-          </div>
+          <img 
+            src={logoImg} 
+            alt="GlobalTrotter Logo" 
+            className="w-8 h-8 rounded-lg border border-gt-teal/40 object-contain p-0.5"
+          />
           <div>
             <div className="text-sm font-semibold text-white tracking-tight">GlobalTrotter</div>
             <div className="text-[10px] text-gray-400 tracking-wide uppercase">Premium Travel</div>
@@ -88,9 +91,11 @@ const Sidebar = ({ onOpenNewTrip }) => {
             onClick={() => handleNav('/')}
             className="flex items-center gap-3.5 px-2 pt-1 cursor-pointer group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gt-teal/20 border border-gt-teal flex items-center justify-center text-gt-teal font-serif font-bold text-lg shadow-inner group-hover:scale-105 transition-transform">
-              G
-            </div>
+            <img 
+              src={logoImg} 
+              alt="GlobalTrotter Logo" 
+              className="w-10 h-10 rounded-xl border border-gt-teal/40 shadow-inner object-contain p-0.5 group-hover:scale-105 transition-transform"
+            />
             <div>
               <h1 className="text-base font-bold text-white tracking-tight leading-tight group-hover:text-gt-teal transition-colors">
                 GlobalTrotter

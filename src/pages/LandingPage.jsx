@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Compass, Mountain, MapPin, ArrowRight, ShieldCheck, Globe, UserCheck, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import OptimizedImage from '../components/OptimizedImage';
 import LazyVideo from '../components/LazyVideo';
-import { auth } from '../lib/auth';
+import logoImg from '../assets/logo.png';
 
 const itineraries = [
   {
@@ -66,8 +66,13 @@ export default function LandingPage() {
 
         {/* Navigation */}
         <header className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-serif font-bold tracking-tight text-white flex items-center gap-2">
-            GlobalTrotter
+          <Link to="/" className="text-2xl font-serif font-bold tracking-tight text-white flex items-center gap-2.5 group">
+            <img 
+              src={logoImg} 
+              alt="GlobalTrotter Logo" 
+              className="w-9 h-9 rounded-xl border border-gt-teal/40 object-contain p-0.5 group-hover:scale-105 transition-transform" 
+            />
+            <span>GlobalTrotter</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
