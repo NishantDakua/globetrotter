@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import logoImg from '../../assets/logo.png';
+import SettingsModal from '../common/SettingsModal';
+import { useSettings } from '../../context/SettingsContext';
 import { 
   Home, 
   Compass, 
@@ -13,26 +16,25 @@ import {
 } from 'lucide-react';
 import { auth } from '../../lib/auth';
 
-import logoImg from '../../assets/logo.png';
-
 const Sidebar = ({ onOpenNewTrip }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: sessionData } = auth.useSession();
   const user = sessionData?.user;
 
+  // Modal open states
+  const [showSettings, setShowSettings] = useState(false);
+
   const navItems = [
-    { name: 'Home', icon: Home, path: '/' },
-    { name: 'My Trips', icon: Luggage, path: '/trips' },
-    { name: 'Explore', icon: Compass, path: '/explore' },
-    { name: 'Community', icon: Users, path: '/community' },
+    { key: 'home', name: 'Home', icon: Home, path: '/' },
+    { key: 'myTrips', name: 'My Trips', icon: Luggage, path: '/trips' },
+    { key: 'explore', name: 'Explore', icon: Compass, path: '/explore' },
+    { key: 'community', name: 'Community', icon: Users, path: '/community' },
   ];
 
   const handleNav = (path) => {
-    if (path === '/explore') {
-      return;
-    }
     navigate(path);
     setMobileOpen(false);
   };
@@ -52,7 +54,7 @@ const Sidebar = ({ onOpenNewTrip }) => {
     <>
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#111219] border-b border-white/5 sticky top-0 z-40">
-        <div className="flex items-center">
+        <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
           <img 
             src={logoImg} 
             alt="GlobalTrotter Logo" 
@@ -82,7 +84,7 @@ const Sidebar = ({ onOpenNewTrip }) => {
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="space-y-6">
-          {/* Brand Logo Header */}
+          {/* Brand Logo Header (Centered & 1.5x scaled) */}
           <div 
             onClick={() => handleNav('/')}
             className="flex justify-center items-center w-full pt-1 cursor-pointer group"
@@ -127,26 +129,24 @@ const Sidebar = ({ onOpenNewTrip }) => {
           {/* New Trip CTA */}
           <button
             onClick={() => {
-              if (onOpenNewTrip) { onOpenNewTrip(); } else { navigate('/new-trip'); }
+              if (onOpenNewTrip) { onOpenNewTrip(); } else { navigate('/new-trip', { state: { from: location.pathname } }); }
               setMobileOpen(false);
             }}
             className="w-full bg-[#009688] hover:bg-[#008477] text-white py-2.5 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-teal-950/40 hover:shadow-teal-900/60 active:scale-[0.98] text-xs cursor-pointer"
           >
             <Plus size={16} />
-            <span>New Trip</span>
+            <span>{t('newTrip') || 'New Trip'}</span>
           </button>
 
           {/* Main Navigation */}
           <nav className="space-y-1 pt-2">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = item.name === 'My Trips' 
-                ? isTripsActive 
-                : location.pathname === item.path;
+              const isActive = item.key === 'myTrips' ? isTripsActive : location.pathname === item.path;
 
               return (
                 <button
-                  key={item.name}
+                  key={item.key}
                   onClick={() => handleNav(item.path)}
                   className={`
                     w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 relative text-left group cursor-pointer
@@ -154,15 +154,11 @@ const Sidebar = ({ onOpenNewTrip }) => {
                       ? 'bg-[#182329]/90 text-[#14b8a6] border-r-2 border-[#009688]' 
                       : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.03]'
                     }
-                    ${item.name === 'Explore' ? 'opacity-60 cursor-not-allowed' : ''}
                   `}
                 >
                   <Icon size={16} className={isActive ? 'text-[#14b8a6]' : 'text-gray-400 group-hover:text-gray-200'} />
-                  <span>{item.name}</span>
-                  {item.name === 'Explore' && (
-                    <span className="ml-auto text-[9px] uppercase px-1.5 py-0.5 rounded bg-white/5 text-gray-500 font-semibold">Soon</span>
-                  )}
-                  {isActive && item.name !== 'Explore' && (
+                  <span>{t(item.key) || item.name}</span>
+                  {isActive && (
                     <span className="absolute right-2 w-1.5 h-1.5 rounded-full bg-[#009688] shadow-[0_0_8px_#009688]"></span>
                   )}
                 </button>
@@ -171,20 +167,23 @@ const Sidebar = ({ onOpenNewTrip }) => {
           </nav>
         </div>
 
-        {/* Bottom Settings */}
-        <div className="space-y-1 pt-4 border-t border-white/5">
+        {/* Bottom Section */}
+        <div className="pt-4 border-t border-white/5">
           <button 
-            onClick={() => {
-              navigate('/settings');
-              setMobileOpen(false);
-            }}
-            className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left cursor-pointer"
+            onClick={() => { setShowSettings(true); setMobileOpen(false); }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/[0.03] transition text-left cursor-pointer group"
           >
-            <Settings size={16} />
-            <span>Settings</span>
+            <Settings size={16} className="text-gray-400 group-hover:text-gray-200 transition" />
+            <span>{t('settings') || 'Settings'}</span>
           </button>
         </div>
       </aside>
+
+      {/* Global Modals Triggered From Sidebar */}
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+      />
     </>
   );
 };

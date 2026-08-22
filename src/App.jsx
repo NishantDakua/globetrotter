@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import { reactAuth } from './lib/auth';
+import { SettingsProvider } from './context/SettingsContext';
 
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
@@ -11,6 +12,7 @@ const Community = lazy(() => import('./pages/Community'));
 const MyTrips = lazy(() => import('./pages/MyTrips'));
 const LiveItinerary = lazy(() => import('./pages/LiveItinerary'));
 const NewTrip = lazy(() => import('./pages/NewTrip'));
+const Explore = lazy(() => import('./pages/Explore'));
 
 function LoadingFallback() {
   return (
@@ -22,25 +24,28 @@ function LoadingFallback() {
 
 function App() {
   return (
-    <Router>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<AuthPage defaultMode="login" />} />
-          <Route path="/register" element={<AuthPage defaultMode="signup" />} />
-          <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
-          <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/trips" element={<MyTrips />} />
-          <Route path="/my-trips" element={<MyTrips />} />
-          <Route path="/itinerary" element={<LiveItinerary />} />
-          <Route path="/live-itinerary" element={<LiveItinerary />} />
-          <Route path="/new-trip" element={<NewTrip />} />
-        </Routes>
-      </Suspense>
-    </Router>
+    <SettingsProvider>
+      <Router>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<AuthPage defaultMode="login" />} />
+            <Route path="/register" element={<AuthPage defaultMode="signup" />} />
+            <Route path="/signup" element={<AuthPage defaultMode="signup" />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/trips" element={<MyTrips />} />
+            <Route path="/my-trips" element={<MyTrips />} />
+            <Route path="/itinerary" element={<LiveItinerary />} />
+            <Route path="/live-itinerary" element={<LiveItinerary />} />
+            <Route path="/new-trip" element={<NewTrip />} />
+            <Route path="/explore" element={<Explore />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </SettingsProvider>
   );
 }
 

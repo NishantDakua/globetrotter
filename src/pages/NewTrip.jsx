@@ -1,22 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, ImagePlus, AlertCircle, Loader2 } from 'lucide-react';
 import { buildTrip, loadUpcomingTrips, saveUpcomingTrips } from '../lib/tripsStore';
 import Footer from '../components/common/Footer';
+import logoImg from '../assets/logo.png';
 
 // ─── Fallback cinematic background shown before user picks an image ────────────
 const PLACEHOLDER_BG = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1200&auto=format&fit=crop';
 
 const NewTrip = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Form state
-  const [title, setTitle]             = useState('');
-  const [destination, setDestination] = useState('');
+  // Form state pre-populated if navigated from Explore page
+  const [title, setTitle]             = useState(location.state?.title || '');
+  const [destination, setDestination] = useState(location.state?.destination || '');
   const [departureDate, setDeparture] = useState('');
   const [returnDate, setReturn]       = useState('');
-  const [coverImage, setCoverImage]   = useState(null);   // data URL or null
-  const [coverPreview, setCoverPreview] = useState(PLACEHOLDER_BG);
+  const [coverImage, setCoverImage]   = useState(location.state?.coverImage || null);   // data URL or null
+  const [coverPreview, setCoverPreview] = useState(location.state?.coverImage || PLACEHOLDER_BG);
   const [errors, setErrors]           = useState({});
   const [submitting, setSubmitting]   = useState(false);
   const fileInputRef = useRef(null);
@@ -77,7 +79,13 @@ const NewTrip = () => {
     }
   };
 
-  const handleCancel = () => navigate('/trips');
+  const handleCancel = () => {
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      navigate(-1);
+    }
+  };
 
   // ── Shared input class helper ───────────────────────────────────────────────
   const inputClass = (hasErr) =>
@@ -87,7 +95,7 @@ const NewTrip = () => {
     <div className="min-h-screen bg-[#0b0c10] text-gray-100 flex flex-col antialiased selection:bg-teal-500/30 selection:text-teal-200">
 
       {/* ── Top Back Bar ───────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-30 bg-[#0b0c10]/90 backdrop-blur-md border-b border-white/5 px-4 sm:px-8 py-3">
+      <div className="sticky top-0 z-30 bg-[#0b0c10]/90 backdrop-blur-md border-b border-white/5 px-4 sm:px-8 py-3 flex items-center justify-between">
         <button
           onClick={handleCancel}
           className="inline-flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white tracking-widest uppercase transition cursor-pointer group"
@@ -96,6 +104,7 @@ const NewTrip = () => {
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform text-[#14b8a6]" />
           <span>Back</span>
         </button>
+        <img src={logoImg} alt="GlobalTrotter" className="h-7 w-auto object-contain cursor-pointer" onClick={() => navigate('/trips')} />
       </div>
 
       {/* ── Main Content ───────────────────────────────────────────────────── */}

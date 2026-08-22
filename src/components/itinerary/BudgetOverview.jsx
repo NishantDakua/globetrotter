@@ -1,5 +1,6 @@
 import React from 'react';
 import { Wallet } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
 
 const BudgetOverview = ({ 
   totalAmount = 2450, 
@@ -9,8 +10,10 @@ const BudgetOverview = ({
   activitiesPct = 0,
   onDetailClick 
 }) => {
-  // Format total as currency
-  const formattedTotal = `$${totalAmount.toLocaleString()}`;
+  const { formatPrice } = useSettings();
+
+  // Format total using active currency setting
+  const formattedTotal = formatPrice(totalAmount) || `$${totalAmount.toLocaleString()}`;
 
   // Calculate conic gradient angles based on dynamic percentages
   const p1 = lodgingPct;
