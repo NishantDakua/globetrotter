@@ -52,16 +52,12 @@ const Sidebar = ({ onOpenNewTrip }) => {
     <>
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#111219] border-b border-white/5 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <img 
             src={logoImg} 
             alt="GlobalTrotter Logo" 
-            className="w-8 h-8 rounded-lg border border-gt-teal/40 object-contain p-0.5"
+            className="h-9 object-contain"
           />
-          <div>
-            <div className="text-sm font-semibold text-white tracking-tight">GlobalTrotter</div>
-            <div className="text-[10px] text-gray-400 tracking-wide uppercase">Premium Travel</div>
-          </div>
         </div>
         <button 
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -86,24 +82,16 @@ const Sidebar = ({ onOpenNewTrip }) => {
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="space-y-6">
-          {/* Brand Logo & Header */}
+          {/* Brand Logo Header */}
           <div 
             onClick={() => handleNav('/')}
-            className="flex items-center gap-3.5 px-2 pt-1 cursor-pointer group"
+            className="flex justify-center items-center w-full pt-1 cursor-pointer group"
           >
             <img 
               src={logoImg} 
-              alt="GlobalTrotter Logo" 
-              className="w-10 h-10 rounded-xl border border-gt-teal/40 shadow-inner object-contain p-0.5 group-hover:scale-105 transition-transform"
+              alt="GlobalTrotter" 
+              className="h-[60px] object-contain group-hover:scale-105 transition-transform"
             />
-            <div>
-              <h1 className="text-base font-bold text-white tracking-tight leading-tight group-hover:text-gt-teal transition-colors">
-                GlobalTrotter
-              </h1>
-              <p className="text-[11px] font-medium text-gray-400 tracking-wide">
-                Premium Travel
-              </p>
-            </div>
           </div>
 
           {/* User Profile Card */}

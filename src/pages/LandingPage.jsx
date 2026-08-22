@@ -4,6 +4,7 @@ import { Search, Compass, Mountain, MapPin, ArrowRight, ShieldCheck, Globe, User
 import OptimizedImage from '../components/OptimizedImage';
 import LazyVideo from '../components/LazyVideo';
 import logoImg from '../assets/logo.png';
+import { auth } from '../lib/auth';
 
 const itineraries = [
   {
@@ -66,13 +67,12 @@ export default function LandingPage() {
 
         {/* Navigation */}
         <header className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-serif font-bold tracking-tight text-white flex items-center gap-2.5 group">
+          <Link to="/" className="group flex items-center">
             <img 
               src={logoImg} 
-              alt="GlobalTrotter Logo" 
-              className="w-9 h-9 rounded-xl border border-gt-teal/40 object-contain p-0.5 group-hover:scale-105 transition-transform" 
+              alt="GlobalTrotter" 
+              className="h-10 sm:h-12 object-contain group-hover:scale-105 transition-transform" 
             />
-            <span>GlobalTrotter</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
