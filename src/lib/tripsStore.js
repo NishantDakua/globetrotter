@@ -58,7 +58,7 @@ export function saveUpcomingTrips(trips) {
 export function computeCountdownDays(departureDate) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const dep = new Date(departureDate);
+  const dep = new Date(`${departureDate}T00:00:00`);
   dep.setHours(0, 0, 0, 0);
   const diff = Math.ceil((dep - today) / (1000 * 60 * 60 * 24));
   return Math.max(0, diff);
